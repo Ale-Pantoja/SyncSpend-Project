@@ -1,0 +1,177 @@
+<form id="main-account-form" class="p-4 rounded-xl flex flex-col gap-6 border border-gray-200 shadow-lg bg-white max-w-lg mx-auto">
+
+  <div class="flex flex-col gap-2">
+    <label for="name-input" class="font-semibold text-gray-700">Nombre de la cuenta</label>
+    <div class="relative flex items-center w-full">
+      <input 
+        type="text" 
+        name="name-input" 
+        id="name-input" 
+        class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors" 
+        placeholder="Ej: Banesco"
+      >
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="name-error">
+      El nombre no es válido.
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="currency-select" class="font-semibold text-gray-700">Moneda</label>
+    <div class="relative flex items-center w-full">
+      <select 
+        name="currency-select" 
+        id="currency-select" 
+        class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white cursor-pointer transition-colors"
+      >
+        <option value="" disabled selected>Selecciona una moneda</option>
+        <option value="VES">VES (Bolívares)</option>
+        <option value="USD">USD (Dólares)</option>
+      </select>
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="currency-error">
+      Debes seleccionar una moneda.
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="balance-input" class="font-semibold text-gray-700">Saldo inicial</label>
+    <div class="relative flex items-center w-full">
+      <input 
+        type="number" 
+        name="balance-input" 
+        id="balance-input" 
+        class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors" 
+        placeholder="0.00"
+        value="0"
+        step="0.01"
+      >
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="balance-error">
+      El saldo debe ser un número positivo.
+    </p>
+  </div>
+
+  <div id="status-message" class="hidden p-2 rounded-lg text-sm text-center"></div>
+
+  <button 
+    id="main-account-form-btn" 
+    disabled 
+    class="bg-teal-600 hover:bg-teal-700 transition-colors py-3 px-4 text-white text-center font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed tracking-wide"
+  >
+    Crear Cuenta
+  </button>
+</form>
+
+
+<style>
+  .input-invalid {
+    border-color: red !important;
+  }
+  .input-valid {
+    border-color: green !important;
+  }
+  .show-helper-text {
+    display: block !important;
+  }
+  .status-success {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  .status-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+</style>
+
+<script>
+  // @ts-nocheck
+  // Módulos
+ import accountsModule, { accounts } from './accounts.module.js';
+  
+  // Selectores
+  const inputName = document.querySelector('#name-input');
+  const selectCurrency = document.querySelector('#currency-select');
+  const inputBalance = document.querySelector('#balance-input');
+  const form = document.querySelector('#main-account-form');
+  const formBtn = document.querySelector('#main-account-form-btn');
+
+  // Expresión Regular para el nombre
+  const NAME_REGEX = /^[a-zA-Z0-9\s]+$/;
+
+  // Validaciones del formulario
+  let nameValidation = false;
+  let currencyValidation = false;
+  let balanceValidation = false;
+
+  // Funciones de utilidad
+  const renderValidation = (input, validation) => {
+    const helperText = input.parentElement.nextElementSibling;
+    const iconContainer = input.nextElementSibling;
+
+    if (input.value === '' && input.tagName !== 'SELECT') {
+      input.classList.remove('input-invalid', 'input-valid');
+      helperText?.classList.remove('show-helper-text');
+      iconContainer.innerHTML = '';
+      iconContainer.classList.remove('show');
+    } else if (validation) {
+      input.classList.add('input-valid');
+      input.classList.remove('input-invalid');
+      helperText?.classList.remove('show-helper-text');
+      iconContainer.innerHTML = '<span class="iconify" data-icon="mdi:check-circle" style="color: green;"></span>';
+      iconContainer.classList.add('show');
+    } else {
+      input.classList.add('input-invalid');
+      input.classList.remove('input-valid');
+      helperText?.classList.add('show-helper-text');
+      iconContainer.innerHTML = '<span class="iconify" data-icon="mdi:close-circle" style="color: red;"></span>';
+      iconContainer.classList.add('show');
+    }
+  };
+
+  const renderButtonState = () => {
+    if (nameValidation && currencyValidation && balanceValidation) {
+      formBtn.disabled = false;
+    } else {
+      formBtn.disabled = true;
+    }
+  };
+
+  // Eventos
+  inputName.addEventListener('input', () => {
+    nameValidation = NAME_REGEX.test(inputName.value);
+    renderValidation(inputName, nameValidation);
+    renderButtonState();
+  });
+
+  selectCurrency.addEventListener('change', () => {
+    currencyValidation = selectCurrency.value !== '';
+    renderValidation(selectCurrency, currencyValidation);
+    renderButtonState();
+  });
+
+  inputBalance.addEventListener('input', () => {
+    balanceValidation = !isNaN(inputBalance.value) && Number(inputBalance.value) >= 0;
+    renderValidation(inputBalance, balanceValidation);
+    renderButtonState();
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!nameValidation || !currencyValidation || !balanceValidation) return;
+
+    const newAccount = {
+      name: inputName.value,
+      currency: selectCurrency.value,
+      balance: Number(inputBalance.value)
+    };
+
+    await accountsModule.addAccount(newAccount);
+    form.reset();
+  });
+
+</script>

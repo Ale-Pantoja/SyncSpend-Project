@@ -1,0 +1,244 @@
+<form id="main-transaction-form" class="p-4 rounded-xl flex flex-col gap-6 border border-gray-200 shadow-lg bg-white max-w-lg mx-auto">
+
+  <div class="flex flex-col gap-2">
+    <label for="description-input" class="font-semibold text-gray-700">Descripcion de la transaccion</label>
+    <div class="relative flex items-center w-full">
+      <input 
+        type="text" 
+        name="description-input" 
+        id="description-input" 
+        class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors" 
+        placeholder="Ej: Alcaldia"
+      >
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="description-error">
+      La descripcion debe ser corta.
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="date-input" class="font-semibold text-gray-700">Fecha</label>
+    <div class="relative flex items-center w-full">
+      <input 
+        type="date" 
+        name="date-input" 
+        id="date-input" 
+        class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors" 
+      >
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="description-error">
+      Debes colocar una Fecha.
+    </p>
+  </div>
+
+  <div class="flex flex-col gap-2">
+    <label for="type-select" class="font-semibold text-gray-700">Tipo</label>
+    <div class="relative flex items-center w-full">
+      <select 
+        name="type-select" 
+        id="type-select" 
+        class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white cursor-pointer transition-colors"
+      >
+        <option value="" disabled selected>Selecciona tu tipo de transaccion</option>
+        <option value="income">Ingreso</option>
+        <option value="expense">Gasto</option>
+      </select>
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="description-error">
+      Debes seleccionar un tipo de transaccion.
+    </p>
+  </div>
+  
+  <div class="flex flex-col gap-2">
+    <label for="amount-input" class="font-semibold text-gray-700">Monto</label>
+    <div class="relative flex items-center w-full">
+      <input 
+      type="number" 
+      name="amount-input" 
+      id="amount-input" 
+      class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors" 
+      placeholder="0.00"
+      value="0"
+      step="0.01"
+      >
+      <span class="absolute right-3 hidden text-xl"></span>
+    </div>
+    <p class="text-xs font-light text-red-500 hidden" id="description-error">
+      El monto debe ser un número positivo.
+    </p>
+  </div>
+
+   <div class="flex flex-col gap-2">
+        <label for="account-select" class="font-semibold text-gray-700">Cuenta</label>
+        <div class="relative flex items-center w-full">
+          <select 
+            name="account-select" 
+            id="account-select" 
+            class="w-full rounded-lg p-3 text-base ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-white cursor-pointer transition-colors"
+          >
+            <option value="" disabled selected>Selecciona una cuenta</option>
+          </select>
+          <span class="absolute right-3 hidden text-xl"></span>
+        </div>
+        <p class="text-xs font-light text-red-500 hidden" id="description-error">
+          Debes seleccionar una cuenta.
+        </p>
+      </div>
+  
+  <div id="status-message" class="hidden p-2 rounded-lg text-sm text-center"></div>
+
+  <button 
+    id="main-transaction-form-btn" 
+    disabled 
+    class="bg-teal-600 hover:bg-teal-700 transition-colors py-3 px-4 text-white text-center font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed tracking-wide"
+  >
+    Crear transaccion
+  </button>
+</form>
+
+
+<style>
+  .input-invalid {
+    border-color: red !important;
+  }
+  .input-valid {
+    border-color: green !important;
+  }
+  .show-helper-text {
+    display: block !important;
+  }
+  .status-success {
+    background-color: #d1fae5;
+    color: #065f46;
+  }
+  .status-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+  }
+</style>
+
+<script>
+  // @ts-nocheck
+  import transactionsModule from "./transactions.module";
+  import accountsModule from "../accounts/accounts.module";
+  import { accounts } from "../accounts/accounts.module";
+  
+  const inputDescription = document.querySelector('#description-input');
+  const inputDate = document.querySelector('#date-input');
+  const selectType = document.querySelector('#type-select');
+  const inputAmount = document.querySelector('#amount-input');
+  const selectAccount = document.querySelector('#account-select');
+  const transactionForm = document.querySelector('#main-transaction-form');
+  const transactionFormBtn = document.querySelector('#main-transaction-form-btn');
+  
+  // Expresión Regular para la descripción
+  const DESCRIPTION_REGEX = /^[a-zA-Z0-9\s]+$/;
+
+  // Validaciones del formulario
+  let descriptionValidation = false;
+  let dateValidation = false;
+  let typeValidation = false;
+  let amountValidation = false;
+  let accountValidation = false;
+
+  // Funciones de utilidad
+  const renderValidation = (input, validation) => {
+    const errorText = document.querySelector(`#description-error`);
+    const iconContainer = input.nextElementSibling;
+    
+    if (input.value === '' && input.tagName !== 'SELECT') {
+      input.classList.remove('input-invalid', 'input-valid');
+      errorText?.classList.add('hidden');
+      iconContainer.innerHTML = '';
+    } else if (validation) {
+      input.classList.add('input-valid');
+      input.classList.remove('input-invalid');
+      errorText?.classList.add('hidden');
+      iconContainer.innerHTML = '<span class="iconify" data-icon="mdi:check-circle" style="color: green;"></span>';
+    } else {
+      input.classList.add('input-invalid');
+      input.classList.remove('input-valid');
+      errorText?.classList.remove('hidden');
+      iconContainer.innerHTML = '<span class="iconify" data-icon="mdi:close-circle" style="color: red;"></span>';
+    }
+  };
+
+  const renderTransactionButtonState = () => {
+    if (descriptionValidation && dateValidation && typeValidation && amountValidation && accountValidation) {
+      transactionFormBtn.disabled = false;
+    } else {
+      transactionFormBtn.disabled = true;
+    }
+  };
+
+  accounts.subscribe(newAccounts => {
+    selectAccount.innerHTML = '<option value="" disabled selected>Selecciona una cuenta</option>';
+    for (const account of newAccounts) {
+      const option = document.createElement('option');
+      option.value = Number(account.id);
+      option.textContent = `${account.name} ${account.currency}`;
+      selectAccount.appendChild(option);
+    }
+  });
+
+
+  inputDescription.addEventListener('input', () => {
+    descriptionValidation = DESCRIPTION_REGEX.test(inputDescription.value);
+    renderValidation(inputDescription, descriptionValidation, 'description-error');
+    renderTransactionButtonState();
+  });
+
+  inputDate.addEventListener('input', () => {
+    dateValidation = inputDate.value !== '';
+    renderValidation(inputDate, dateValidation, 'date-error');
+    renderTransactionButtonState();
+  });
+  
+  selectType.addEventListener('change', () => {
+    typeValidation = selectType.value !== '';
+    renderValidation(selectType, typeValidation, 'type-error');
+    renderTransactionButtonState();
+  });
+
+  inputAmount.addEventListener('input', () => {
+    amountValidation = !isNaN(inputAmount.value) && Number(inputAmount.value) >= 0;
+    renderValidation(inputAmount, amountValidation, 'amount-error');
+    renderTransactionButtonState();
+  });
+  
+  selectAccount.addEventListener('change', () => {
+    accountValidation = selectAccount.value !== '';
+    renderValidation(selectAccount, accountValidation, 'account-error');
+    renderTransactionButtonState();
+  });
+
+  transactionForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!descriptionValidation || !dateValidation || !typeValidation || !amountValidation || !accountValidation) {
+      return;
+    }
+
+    const newTransaction = {
+      description: inputDescription.value,
+      date: new Date(inputDate.value).toISOString(),
+      type: selectType.value,
+      amount: Number(inputAmount.value),
+      accountId: Number(selectAccount.value),
+    };
+    console.log(newTransaction);
+    
+
+    await transactionsModule.addTransaction(newTransaction);
+    transactionForm.reset();
+    createTransactionModal.classList.add('hidden');
+  });
+
+  (async () => {
+    await accountsModule.getAccount();
+  })();
+
+</script>

@@ -1,0 +1,112 @@
+---
+import AccountItem from "./AccountItem.astro";
+---
+
+<ul id="account-list" class="flex flex-col gap-4 p-6 bg-white rounded-2xl shadow-2xs border border-teal-200">
+  <template id="account-item-template">
+    <AccountItem 
+      name="Zelle"
+      currency="VES"
+      balance=120
+      id={0}
+    />
+  </template>
+
+<li class="w-full flex justify-between items-center rounded-2xl p-3 text-base ring-1 ring-teal-300 transition-colors">
+  <div class="w-full flex justify-between items-center">
+    <p class="text-base font-light text-teal-600">Total VES: <span id="totalVES" class="font-normal text-teal-800"></span></p>
+    <p class="text-base font-light text-teal-600">Total USD: <span id="totalUSD" class="font-normal text-teal-800"></span></p>
+  </div>
+</li>
+
+</ul>
+
+
+<script>
+// @ts-nocheck
+import ky from "ky";
+import { BACK_ENDPOINT } from "../../config/endpoints";
+import accountsModule from "./accounts.module";
+import { accounts } from "./accounts.module";
+const accountList = document.querySelector('#account-list');
+const accountItemTemplate = document.querySelector('#account-item-template');
+const totalVESElement = document.getElementById('totalVES');
+const totalUSDElement = document.getElementById('totalUSD');
+await accountsModule.getAccount();
+
+accounts.subscribe(accounts => {
+  const dynamicItems = accountList.querySelectorAll('li.generated-account-item');
+  dynamicItems.forEach(item => item.remove());
+
+  let totals = { USD: 0, VES: 0 };
+
+  for (const account of accounts) {
+    const AccountItem = accountItemTemplate.content.cloneNode(true).children[0];
+    
+    AccountItem.classList.add('generated-account-item');
+
+    const inputName = AccountItem.children[0].children[0];
+    const inputCurrency = AccountItem.children[0].children[1];
+    const inputBalance = AccountItem.children[0].children[2];
+    
+    AccountItem.id = account.id;
+    inputName.value = account.name;
+    inputCurrency.value = account.currency;
+    inputBalance.value = account.balance;
+    
+    accountList.prepend(AccountItem);
+
+    if (account.currency === 'USD') {
+        totals.USD += Number(account.balance);
+    } else if (account.currency === 'VES') {
+        totals.VES += Number(account.balance);
+    }
+  }
+
+  totalUSDElement.textContent = totals.USD.toLocaleString({ minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  totalVESElement.textContent = totals.VES.toLocaleString({ minimumFractionDigits: 2, maximumFractionDigits: 2 });
+});
+
+accountList.addEventListener('click', async e => {
+    const deleteBtn = e.target.closest('.delete-btn');
+    const editBtn = e.target.closest('.edit-btn');
+  
+    if (deleteBtn) {
+      const li = deleteBtn.parentElement.parentElement;
+      await accountsModule.removeAccount(li.id);
+    }
+  
+    if (editBtn) {
+      const li = editBtn.parentElement.parentElement;
+      const status = li.dataset.status;
+      const accountInputName = li.children[0].children[0];
+      const accountInputCurrency = li.children[0].children[1];
+      const accountInputBalance = li.children[0].children[2];
+      const accountEditBtn = li.children[1].children[0];
+  
+      if (status === 'inputs-deshabilitados') {
+        accountInputName.removeAttribute('readonly');
+        accountInputCurrency.removeAttribute('readonly');
+        accountInputBalance.removeAttribute('readonly');
+        li.dataset.status = 'inputs-habilitados';
+        accountEditBtn.children[0].classList.add('hidden');
+        accountEditBtn.children[1].classList.remove('hidden');
+      } else if (status === 'inputs-habilitados') {
+        accountInputName.setAttribute('readonly', true);
+        accountInputCurrency.setAttribute('readonly', true);
+        accountInputBalance.setAttribute('readonly', true);
+        li.dataset.status = 'inputs-deshabilitados';
+        accountEditBtn.children[0].classList.remove('hidden');
+        accountEditBtn.children[1].classList.add('hidden');
+        
+        const accountToUpdate = {
+          id: li.id,
+          name: accountInputName.value,
+          currency: accountInputCurrency.value,
+          balance: Number(accountInputBalance.value),
+        };
+        await accountsModule.updateAccount(accountToUpdate);
+      }
+    }
+});
+</script>

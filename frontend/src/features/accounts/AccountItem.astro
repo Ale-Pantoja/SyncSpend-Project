@@ -1,0 +1,22 @@
+---
+const { name, currency, balance, id } = Astro.props;
+import { Icon } from 'astro-icon/components';
+
+---
+
+<li id={id} class="bg-teal-50 flex gap-4 justify-between items-center flex-col md:flex-row rounded-2xl border border-teal-100" data-status="inputs-deshabilitados">
+  <div class="flex flex-col md:flex-row flex-grow w-full md:w-auto rounded-2xl p-2 items-center">
+    <input class="w-full text-center outline-none" type="text" value={name} readonly>
+    <input class="w-full text-center outline-none text-green-600" type="text" value={currency} readonly>
+    <input class="w-full text-center outline-none" type="text" value={balance} readonly>
+  </div>
+  <div class="flex gap-2 items-center">
+    <button class="edit-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-teal-700">
+      <Icon name="mdi:pencil-circle" class="w-6 h-6" is:inline/>
+      <Icon name="mdi:pencil" class="w-6 h-6 hidden" is:inline/>
+    </button>
+    <!-- <button class="delete-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-red-600">
+      <Icon name="mdi:trash-can-outline" class="w-6 h-6" is:inline/>
+    </button> -->
+  </div>
+</li>
