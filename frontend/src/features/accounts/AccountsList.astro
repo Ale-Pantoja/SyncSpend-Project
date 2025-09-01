@@ -3,21 +3,22 @@ import AccountItem from "./AccountItem.astro";
 ---
 
 <ul id="account-list" class="flex flex-col gap-4 p-6 bg-white rounded-2xl shadow-2xs border border-teal-200">
+  
   <template id="account-item-template">
     <AccountItem 
-      name="Zelle"
-      currency="VES"
-      balance=120
-      id={0}
+    name="Zelle"
+    currency="VES"
+    balance=120
+    id={0}
     />
   </template>
-
-<li class="w-full flex justify-between items-center rounded-2xl p-3 text-base ring-1 ring-teal-300 transition-colors">
-  <div class="w-full flex justify-between items-center">
-    <p class="text-base font-light text-teal-600">Total VES: <span id="totalVES" class="font-normal text-teal-800"></span></p>
-    <p class="text-base font-light text-teal-600">Total USD: <span id="totalUSD" class="font-normal text-teal-800"></span></p>
-  </div>
-</li>
+  
+  <li class="w-full flex justify-between items-center rounded-2xl p-3 text-base ring-1 ring-teal-300 transition-colors">
+    <div class="w-full flex justify-between items-center">
+      <p class="text-base font-medium text-teal-600">Total VES: <span id="totalVES" class="font-normal text-teal-800"></span></p>
+      <p class="text-base font-medium text-teal-600">Total USD: <span id="totalUSD" class="font-normal text-teal-800"></span></p>
+    </div>
+  </li>
 
 </ul>
 

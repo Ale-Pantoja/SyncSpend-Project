@@ -11,10 +11,6 @@ const getClient = async () => {
   return await pool.connect();
 };
 
-pool.on('connect', () => {
-  console.log('Conexión con la base de datos establecida.');
-});
-
 export default {
   query: (text, params) => pool.query(text, params),
   getClient,

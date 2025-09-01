@@ -9,12 +9,13 @@ const login = async ({email, password}) => {
     json: {email, password},
     credentials: 'include'
   });
-  user.set(data);
+  user.set(data);       
 }
 
 const getLoggedUser = async () => {
   const data = await ky.get(`${BACK_ENDPOINT}/api/auth/user`, {credentials: 'include'}).json();
   user.set(data);
+  console.log('esta es la data: ',data);
   return data;
 }
 

@@ -3,7 +3,7 @@ import AuthProtected from "../features/auth/AuthProtected.astro";
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Resumen">
+<Layout title="Dashboard">
   <AuthProtected>
     <main class="min-h-[calc(100vh-4rem)] flex flex-col md:flex-row gap-6 p-4 max-w-[90rem] mx-auto">
       <div class="w-full max-w-6xl mx-auto p-4 sm:p-6">
@@ -31,7 +31,7 @@ import Layout from "../layouts/Layout.astro";
           </div>
         </div>
 
-        <!-- Sección de resumen financiero (Tarjetas de métricas) -->
+        <!-- Sección de resumen financiero -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 sm:mb-8">
           <!-- Tarjeta de Ingresos -->
           <div class="bg-indigo-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
@@ -43,8 +43,8 @@ import Layout from "../layouts/Layout.astro";
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ingresos</h2>
             </div>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-usd">$0.00 USD</p>
-            <p class="text-base sm:text-xl text-gray-600" id="ingresos-ves">$0.00 VES</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-ves">$0.00 USD</p>
+            <p class="text-base sm:text-xl text-gray-600" id="ingresos-usd">$0.00 USD</p>
           </div>
 
           <!-- Tarjeta de Gastos -->
@@ -57,8 +57,8 @@ import Layout from "../layouts/Layout.astro";
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Gastos</h2>
             </div>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-usd">$0.00 USD</p>
-            <p class="text-base sm:text-xl text-gray-600" id="gastos-ves">$0.00 VES</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-ves">$0.00 VES</p>
+            <p class="text-base sm:text-xl text-gray-600" id="gastos-usd">$0.00 USD</p>
           </div>
 
           <!-- Tarjeta de Ganancias -->
@@ -71,8 +71,8 @@ import Layout from "../layouts/Layout.astro";
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ganancias</h2>
             </div>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-usd">$0.00 USD</p>
-            <p class="text-base sm:text-xl text-gray-600" id="ganancias-ves">$0.00 VES</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-ves">$0.00 VES</p>
+            <p class="text-base sm:text-xl text-gray-600" id="ganancias-usd">$0.00 USD</p>
           </div>
         </div>
       </div>
@@ -83,6 +83,7 @@ import Layout from "../layouts/Layout.astro";
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+  // @ts-nocheck
   import accountsModule, { accounts } from "../features/accounts/accounts.module";
   import transactionsModule, { transactions } from "../features/transactions/transactions.module";
 
@@ -107,37 +108,52 @@ import Layout from "../layouts/Layout.astro";
  * @returns {Object} Un objeto con los totales.
  */
 const calculateTotals = (transactions, accounts, rate) => {
-    let totalIngresosUsd = 0;
-    let totalGastosUsd = 0;
+  let totalIngresosUsd = 0;
+  let totalGastosUsd = 0;
 
     // Iterar sobre cada transacción
     transactions.forEach(transaction => {
         // Encontrar la cuenta asociada a la transacción
-        const account = accounts.find(acc => acc.id === transaction.account_id);
+        const account = accounts.find(acc => acc.id === transaction.account_id);        
 
         if (account) {
             let amountInUsd = 0;
             // Convertir cada transacción a USD según la moneda de la cuenta
             if (account.currency === 'USD') {
                 amountInUsd = Number(transaction.amount);
+                console.log('si es usd', amountInUsd);
+                
             } else if (account.currency === 'VES') {
                 // Evitar división por cero
-                amountInUsd = rate > 0 ? Number(transaction.amount) / rate : 0;
+                amountInUsd = Number(transaction.amount);
+                console.log('si es ves', amountInUsd);
+                
             }
 
             // Sumar al total de ingresos o gastos
-            if (transaction.type === 'ingreso') {
+            if (transaction.type === 'income') {
                 totalIngresosUsd += amountInUsd;
-            } else if (transaction.type === 'gasto') {
+                console.log('monto final', amountInUsd);
+                
+            } else if (transaction.type === 'expense') {
                 totalGastosUsd += amountInUsd;
+                console.log('monto final', amountInUsd);
+
             }
         }
     });
 
+    console.log('montos del calTotals: ', totalIngresosUsd, ' y ', totalGastosUsd);
+    
+
     const totalGananciasUsd = totalIngresosUsd - totalGastosUsd;
+    console.log(totalGananciasUsd);
+    
     
     // Convertir los totales a VES
     const totalIngresosVes = totalIngresosUsd * rate;
+    console.log('total ingresos VES: ', totalIngresosVes);
+    
     const totalGastosVes = totalGastosUsd * rate;
     const totalGananciasVes = totalGananciasUsd * rate;
 

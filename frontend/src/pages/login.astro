@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout>
+<Layout title="Iniciar Sesión">
   <main class="min-h-[calc(100vh-4rem)] flex items-center justify-center p-4 sm:p-8 bg-gray-50">
     <div class="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl p-6 sm:p-8 md:p-10 space-y-8 bg-white rounded-xl shadow-md transition-all duration-300">
       <div class="text-center space-y-2">
@@ -52,7 +52,8 @@ import Layout from "../layouts/Layout.astro";
 <script>
   // @ts-nocheck
   import { BACK_ENDPOINT } from "../config/endpoints";
-import AuthModule from "../features/auth/auth.module";
+  import AuthModule from "../features/auth/auth.module";
+  import { user } from "../features/auth/auth.module";
   import { createNotification } from "../features/notifications/notificiation";
   import ky from 'ky';
 
@@ -63,11 +64,11 @@ import AuthModule from "../features/auth/auth.module";
 
   // Form Submission
   form.addEventListener('submit', async (event) => {
-    event.preventDefault();
+    event.preventDefault();    
 
     try {
       await AuthModule.login({email: emailInput.value, password: passwordInput.value});
-      location.assign('/forms');
+      location.assign('/forms');      
     } catch (error) {
       console.log(error);
       const errorData = await error?.response?.json();

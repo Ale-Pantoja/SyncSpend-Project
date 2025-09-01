@@ -10,7 +10,6 @@ const transactionsRouter = express.Router();
 transactionsRouter.get('/', async (req, res) => {
   const user = req.user;
   const transactions = await transactionsRepository.getAll({ userId: user.id });
-  console.log(transactions);
   
   res.json(transactions);
 });

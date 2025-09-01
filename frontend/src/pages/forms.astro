@@ -6,7 +6,7 @@ import Layout from "../layouts/Layout.astro"
 import CreateTransactionsForm from "../features/transactions/CreateTransactionsForm.astro"
 import TransactionsList from "../features/transactions/TransactionsList.astro"
 ---
-<Layout title="App">
+<Layout title="SyncSpend">
   <AuthProtected>
     <main class="h-[calc(100vh-4rem)] flex flex-col md:flex-row gap-6 p-4 max-w-[90rem] mx-auto">
       
@@ -52,9 +52,8 @@ import TransactionsList from "../features/transactions/TransactionsList.astro"
 
 <script>
   // @ts-nocheck
-
-import accountsModule from "../features/accounts/accounts.module";
-import transactionsModule from "../features/transactions/transactions.module";
+  import accountsModule from "../features/accounts/accounts.module";
+  import transactionsModule from "../features/transactions/transactions.module";
 
   // --- Lógica para mostrar/ocultar el modal de cuentas ---
   const addAccountBtn = document.getElementById('add-account-btn');
