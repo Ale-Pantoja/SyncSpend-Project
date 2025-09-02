@@ -38,6 +38,7 @@ const createAccountsTable = async () => {
     name TEXT NOT NULL,
     currency currency_type NOT NULL,
     balance NUMERIC(15, 2) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true,
     user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE
   )
   `);

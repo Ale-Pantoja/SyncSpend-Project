@@ -7,4 +7,5 @@ export const accountSchema = z.object({
   name: z.string().regex(NAME_REGEX, 'El nombre no es válido.'),
   currency: z.enum(['VES', 'USD']),
   balance: z.coerce.number().positive(),
+  is_active: z.boolean().default(true).optional(),
 });
