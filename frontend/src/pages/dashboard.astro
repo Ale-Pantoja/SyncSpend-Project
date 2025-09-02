@@ -43,8 +43,9 @@ import Layout from "../layouts/Layout.astro";
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ingresos</h2>
             </div>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-ves">$0.00 USD</p>
-            <p class="text-base sm:text-xl text-gray-600" id="ingresos-usd">$0.00 USD</p>
+            <!-- Contenedor para los valores de las monedas -->
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-usd">$0.00 USD</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-ves">Bs.0.00 VES</p>
           </div>
 
           <!-- Tarjeta de Gastos -->
@@ -57,8 +58,9 @@ import Layout from "../layouts/Layout.astro";
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Gastos</h2>
             </div>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-ves">$0.00 VES</p>
-            <p class="text-base sm:text-xl text-gray-600" id="gastos-usd">$0.00 USD</p>
+            <!-- Contenedor para los valores de las monedas -->
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-usd">$0.00 USD</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-ves">Bs.0.00 VES</p>
           </div>
 
           <!-- Tarjeta de Ganancias -->
@@ -71,8 +73,9 @@ import Layout from "../layouts/Layout.astro";
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ganancias</h2>
             </div>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-ves">$0.00 VES</p>
-            <p class="text-base sm:text-xl text-gray-600" id="ganancias-usd">$0.00 USD</p>
+            <!-- Contenedor para los valores de las monedas -->
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-usd">$0.00 USD</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-ves">Bs.0.00 VES</p>
           </div>
         </div>
       </div>
@@ -87,7 +90,6 @@ import Layout from "../layouts/Layout.astro";
   import accountsModule, { accounts } from "../features/accounts/accounts.module";
   import transactionsModule, { transactions } from "../features/transactions/transactions.module";
 
-    // Variables globales para los elementos HTML y el gráfico
     const ingresosUsdEl = document.getElementById('ingresos-usd');
     const ingresosVesEl = document.getElementById('ingresos-ves');
     const gastosUsdEl = document.getElementById('gastos-usd');
@@ -101,61 +103,45 @@ import Layout from "../layouts/Layout.astro";
     let myChart;
 
 /**
- * Calcula los totales de ingresos, gastos y ganancias en USD y VES.
- * @param {Array<Object>} transactions - El array de transacciones.
- * @param {Array<Object>} accounts - El array de cuentas.
- * @param {number} rate - El tipo de cambio de USD a VES.
- * @returns {Object} Un objeto con los totales.
+ * Calculates total income, expenses, and profits in USD and VES.
+ * @param {Array<Object>} transactions - The array of transactions.
+ * @param {Array<Object>} accounts - The array of accounts.
+ * @returns {Object} An object with the totals.
  */
-const calculateTotals = (transactions, accounts, rate) => {
-  let totalIngresosUsd = 0;
-  let totalGastosUsd = 0;
+const calculateTotals = (transactions, accounts) => {
+    let totalIngresosUsd = 0;
+    let totalGastosUsd = 0;
+    let totalIngresosVes = 0;
+    let totalGastosVes = 0;
 
-    // Iterar sobre cada transacción
+    // Iterate over each transaction
     transactions.forEach(transaction => {
-        // Encontrar la cuenta asociada a la transacción
-        const account = accounts.find(acc => acc.id === transaction.account_id);        
-
+        const account = accounts.find(acc => acc.id === transaction.account_id);
+        console.log(transaction, account); // Debugging line
+                
+        
         if (account) {
-            let amountInUsd = 0;
-            // Convertir cada transacción a USD según la moneda de la cuenta
+            const amount = Number(transaction.amount);
+
             if (account.currency === 'USD') {
-                amountInUsd = Number(transaction.amount);
-                console.log('si es usd', amountInUsd);
-                
+              
+                if (transaction.type === 'income') {
+                    totalIngresosUsd += amount;
+                } else if (transaction.type === 'expense') {
+                    totalGastosUsd += amount;
+                }
             } else if (account.currency === 'VES') {
-                // Evitar división por cero
-                amountInUsd = Number(transaction.amount);
-                console.log('si es ves', amountInUsd);
-                
-            }
-
-            // Sumar al total de ingresos o gastos
-            if (transaction.type === 'income') {
-                totalIngresosUsd += amountInUsd;
-                console.log('monto final', amountInUsd);
-                
-            } else if (transaction.type === 'expense') {
-                totalGastosUsd += amountInUsd;
-                console.log('monto final', amountInUsd);
-
+                if (transaction.type === 'income') {
+                    totalIngresosVes += amount;
+                } else if (transaction.type === 'expense') {
+                    totalGastosVes += amount;
+                }
             }
         }
     });
 
-    console.log('montos del calTotals: ', totalIngresosUsd, ' y ', totalGastosUsd);
-    
-
     const totalGananciasUsd = totalIngresosUsd - totalGastosUsd;
-    console.log(totalGananciasUsd);
-    
-    
-    // Convertir los totales a VES
-    const totalIngresosVes = totalIngresosUsd * rate;
-    console.log('total ingresos VES: ', totalIngresosVes);
-    
-    const totalGastosVes = totalGastosUsd * rate;
-    const totalGananciasVes = totalGananciasUsd * rate;
+    const totalGananciasVes = totalIngresosVes - totalGastosVes;
 
     return {
         ingresosUsd: totalIngresosUsd,
@@ -168,42 +154,50 @@ const calculateTotals = (transactions, accounts, rate) => {
 };
 
     /**
-     * Actualiza todos los elementos del tablero con los datos financieros.
-     * @param {Object} totals - El objeto con los totales de ingresos, gastos y ganancias.
-     * @param {number} dolarToday - El tipo de cambio actual de USD a VES.
+     * Updates all dashboard elements with financial data.
+     * @param {Object} totals - The object with total income, expenses, and profits.
+     * @param {number} dolarToday - The current USD to VES exchange rate.
      */
     const updateDashboard = (totals, dolarToday) => {
-        // Actualizar los elementos HTML con los valores calculados
+        // Update HTML elements with calculated values
         ingresosUsdEl.textContent = `$${totals.ingresosUsd.toFixed(2)} USD`;
-        ingresosVesEl.textContent = `${totals.ingresosVes.toFixed(2)} VES`;
+        ingresosVesEl.textContent = `Bs.${totals.ingresosVes.toFixed(2)} VES`;
         gastosUsdEl.textContent = `$${totals.gastosUsd.toFixed(2)} USD`;
-        gastosVesEl.textContent = `${totals.gastosVes.toFixed(2)} VES`;
+        gastosVesEl.textContent = `Bs.${totals.gastosVes.toFixed(2)} VES`;
         gananciasUsdEl.textContent = `$${totals.gananciasUsd.toFixed(2)} USD`;
-        gananciasVesEl.textContent = `${totals.gananciasVes.toFixed(2)} VES`;
+        gananciasVesEl.textContent = `Bs.${totals.gananciasVes.toFixed(2)} VES`;
 
-        // Actualizar el valor del dólar
+        // Update the dollar rate
         usdVesRateEl.textContent = `Bs.${dolarToday.toFixed(2)}`;
         usdVesTextEl.textContent = `${dolarToday.toFixed(2)}`;
 
-        // Actualizar la fecha
+        // Update the date
         const today = new Date();
         updateDateEl.textContent = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
 
-        // Si el gráfico ya existe, destrúyelo para evitar superposiciones
+        // If the chart already exists, destroy it to avoid overlaps
         if (myChart) {
             myChart.destroy();
         }
 
-        // Configuración y creación del gráfico de barras
         const data = {
             labels: ['Ingresos', 'Gastos', 'Ganancias'],
-            datasets: [{
-                label: 'Resumen Financiero (USD)',
-                data: [totals.ingresosUsd, totals.gastosUsd, totals.gananciasUsd],
-                backgroundColor: ['rgb(59, 130, 246, 0.6)', 'rgb(239, 68, 68, 0.6)', 'rgb(16, 185, 129, 0.6)'],
-                borderColor: ['rgb(59, 130, 246)', 'rgb(239, 68, 68)', 'rgb(16, 185, 129)'],
-                borderWidth: 1
-            }]
+            datasets: [
+                {
+                    label: 'Resumen (USD)',
+                    data: [totals.ingresosUsd, totals.gastosUsd, totals.gananciasUsd],
+                    backgroundColor: ['#4f39f6', '#c70036', '#00bba7'],
+                    borderColor: ['#4f39f6', '#c70036', '#00bba7'],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Resumen (VES)',
+                    data: [totals.ingresosVes, totals.gastosVes, totals.gananciasVes],
+                    backgroundColor: ['#8e7bff', '#ff6384', '#66d9d0'],
+                    borderColor: ['#8e7bff', '#ff6384', '#66d9d0'],
+                    borderWidth: 1
+                }
+            ]
         };
 
         const config = {
@@ -213,13 +207,12 @@ const calculateTotals = (transactions, accounts, rate) => {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
+                    x: {
+                        stacked: true
+                    },
                     y: {
+                        stacked: true,
                         beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return '$' + value;
-                            }
-                        }
                     }
                 },
                 plugins: {
@@ -234,13 +227,12 @@ const calculateTotals = (transactions, accounts, rate) => {
             },
         };
 
-        // Crear una nueva instancia del gráfico
         myChart = new Chart(ctx, config);
     };
     
   const initDashboard = async () => {
         try {
-            // Obtener las cuentas y transacciones primero
+            // Get accounts and transactions first
             await accountsModule.getAccount();
             await transactionsModule.getTransaction();
 
@@ -254,21 +246,21 @@ const calculateTotals = (transactions, accounts, rate) => {
             const data = await response.json();
             const dolarToday = data.promedio; 
             
-            // Ahora que los datos están disponibles, se puede llamar a get()
+            // Now that data is available, you can call get()
             const transactionsData = transactions.get();
             const accountsData = accounts.get(); 
-            const totals = calculateTotals(transactionsData, accountsData, dolarToday);
+            const totals = calculateTotals(transactionsData, accountsData);
 
-            // Llamar a la función de actualización con los nuevos datos
+            // Call the update function with the new data
             updateDashboard(totals, dolarToday);
 
         } catch (error) {
-            console.error("No se pudo obtener el valor del dólar:", error);
+            console.error("Could not get the dollar value:", error);
             usdVesRateEl.textContent = "Error";
             usdVesTextEl.textContent = "N/A";
         }
     };
 
-    // Inicia el proceso de carga del tablero
     initDashboard();
 </script>
+
