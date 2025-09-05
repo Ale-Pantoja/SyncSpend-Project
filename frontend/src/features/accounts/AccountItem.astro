@@ -1,7 +1,6 @@
 ---
-const { name, currency, balance, id } = Astro.props;
+const { name, currency, balance, id, is_active } = Astro.props;
 import { Icon } from 'astro-icon/components';
-
 ---
 
 <li id={id} class="bg-teal-50 flex gap-4 justify-between items-center flex-col md:flex-row rounded-2xl border border-teal-100" data-status="inputs-deshabilitados">
@@ -15,8 +14,14 @@ import { Icon } from 'astro-icon/components';
       <Icon name="mdi:pencil-circle" class="w-6 h-6" is:inline/>
       <Icon name="mdi:pencil" class="w-6 h-6 hidden" is:inline/>
     </button>
-    <!-- <button class="delete-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-red-600">
-      <Icon name="mdi:trash-can-outline" class="w-6 h-6" is:inline/>
-    </button> -->
-  </div>
+    {is_active ? (
+      <button class="archive-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-indigo-600">
+        <Icon name="mdi:archive-arrow-down-outline" class="w-6 h-6" is:inline/>
+      </button>
+    ) : (
+      <button class="unarchive-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-green-600">
+        <Icon name="mdi:archive-arrow-up-outline" class="w-6 h-6" is:inline/>
+      </button>
+    )}
+    </div>
 </li>

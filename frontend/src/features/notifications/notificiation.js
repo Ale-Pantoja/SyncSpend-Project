@@ -14,10 +14,10 @@ export const createNotification = (options) => {
   
   switch (options.type) {
     case 'success':
-      div.classList.add('bg-green-500');
+      div.classList.add('bg-emerald-500');
       break;
     case 'error':
-      div.classList.add('bg-red-500');
+      div.classList.add('bg-rose-500');
       break;
   }
 

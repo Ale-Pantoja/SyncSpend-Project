@@ -20,6 +20,9 @@ export const deleteAccountsRouteSchema = {
 
 export const updateAccountsRouteSchema = {
   params: z.object({ id: accountIdSchema }),
-  body: accountSchema.omit({ id: true, currency:true}),
+  body: z.object({
+    name: z.string().optional(),
+    is_active: z.boolean().optional(),
+  }),
   queries: z.object({}),
 };

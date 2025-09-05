@@ -71,11 +71,23 @@ const removeAccount = async (id) => {
 /**
  * Actualiza una cuenta
  * @param {Account} accountToUpdate
-*/
+ */
 const updateAccount = async (accountToUpdate) => {
   const url = `${BASE_URL}/${accountToUpdate.id}`;
+  const payload = {};
+
+  if (accountToUpdate.name !== undefined) {
+    payload.name = accountToUpdate.name;
+  }
+  if (accountToUpdate.balance !== undefined) {
+    payload.balance = accountToUpdate.balance;
+  }
+  if (accountToUpdate.is_active !== undefined) {
+    payload.is_active = accountToUpdate.is_active;
+  }
+
   try {
-    const accountUpdated = await ky.put(url, {json: accountToUpdate, credentials: 'include'}).json();
+    const accountUpdated = await ky.put(url, { json: payload, credentials: 'include' }).json();
     accounts.set(accounts.get().map(account => {
       if (account.id === accountUpdated.id) {
         return accountUpdated;
@@ -83,9 +95,9 @@ const updateAccount = async (accountToUpdate) => {
         return account;
       }
     }));
-     createNotification({
+    createNotification({
       title: 'Cuenta actualizada',
-      description: `${accountToUpdate.name}`,
+      description: ``,
       type: 'success'
     });
   } catch (error) {
@@ -101,9 +113,7 @@ const updateAccount = async (accountToUpdate) => {
 
 const getAccount = async () => {
   try {
-    const accountsData = await ky.get(`${BACK_ENDPOINT}/api/accounts`, {
-      credentials: 'include'
-    }).json()
+    const accountsData = await ky.get(`${BACK_ENDPOINT}/api/accounts`, { credentials: 'include' }).json();
     accounts.set(accountsData);
   } catch (error) {
     if (error.response.status === 401 || error.response.status === 403) {
@@ -111,7 +121,7 @@ const getAccount = async () => {
     }
     console.log(error);
   }
-}
+};
 
 export default {
   addAccount,

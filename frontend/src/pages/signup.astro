@@ -78,6 +78,13 @@ import Layout from "../layouts/Layout.astro";
           >
             Crear cuenta
           </button>
+
+
+          <p class="text-center text-sm text-gray-600">
+            ¿Ya tienes cuenta? 
+            <a href="login" class="font-medium text-teal-600 hover:text-teal-700">Inicia sesión aquí</a>
+          </p>
+
         </form>
       </div>
     </main>
@@ -134,8 +141,6 @@ import { createNotification } from "../features/notifications/notificiation";
     // Enable the button only if all validation checks pass
     submitButton.disabled = !isEmailValid || !isNameValid || !isPasswordValid || !doPasswordsMatch;
   }
-
-  // Event Listeners for Real-time Validation
 
   // 1. Email Validation
   emailInput.addEventListener('input', () => {

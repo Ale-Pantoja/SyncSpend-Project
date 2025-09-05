@@ -13,7 +13,7 @@ import authRouter from './src/modules/auth/auth.routes.js';
 import loginRoutes from './src/modules/login/login.routes.js';
 const app = express();
 
-app.use(cors({ credentials: true, origin: ['http://localhost:4321'] }));
+app.use(cors({ credentials: true, origin: ['http://localhost:4321'] })); 
 app.use(express.json());
 app.use(cookieParser());
 

@@ -1,6 +1,7 @@
 ---
 import AuthProtected from "../features/auth/AuthProtected.astro";
 import Layout from "../layouts/Layout.astro";
+import { Icon } from 'astro-icon/components';
 ---
 
 <Layout title="Dashboard">
@@ -32,52 +33,87 @@ import Layout from "../layouts/Layout.astro";
         </div>
 
         <!-- Sección de resumen financiero -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 sm:mb-8">
-          <!-- Tarjeta de Ingresos -->
+
+        <!-- Contenedor total para dólares -->
+        <p class="text-2xl font-semibold text-teal-700 text-center m-4">Totales en Bolivares</p>
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6 p-3 shadow-2xl rounded-2xl bg-gray-200">
+          <!-- Tarjeta de income en USD -->
           <div class="bg-indigo-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
             <div class="flex items-center mb-2">
               <div class="bg-indigo-200 text-indigo-800 p-3 rounded-full mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V2m0 6V2m0 16v-6m0 6c-1.11 0-2.08-.402-2.599-1M12 16c1.11 0 2.08-.402 2.599-1" />
-                </svg>
+                <Icon name="mdi:attach-money" class="w-6 h-6" is:inline/>
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ingresos</h2>
             </div>
-            <!-- Contenedor para los valores de las monedas -->
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-usd">$0.00 USD</p>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ingresos-ves">Bs.0.00 VES</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="income-usd">$0.00</p>
           </div>
 
-          <!-- Tarjeta de Gastos -->
+          <!-- Tarjeta expense USD -->
           <div class="bg-rose-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
             <div class="flex items-center mb-2">
               <div class="bg-rose-200 text-rose-800 p-3 rounded-full mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <Icon name="mdi:hand-extended" class="w-6 h-6" is:inline/>
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Gastos</h2>
             </div>
-            <!-- Contenedor para los valores de las monedas -->
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-usd">$0.00 USD</p>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="gastos-ves">Bs.0.00 VES</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="expense-usd">$0.00</p>
           </div>
 
-          <!-- Tarjeta de Ganancias -->
+          <!-- Tarjeta profits USD -->
           <div class="bg-teal-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
             <div class="flex items-center mb-2">
               <div class="bg-teal-200 text-teal-800 p-3 rounded-full mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.409 9.172 5 7.5 5S4.168 5.409 3 6.253v13C4.168 18.409 5.828 18 7.5 18s3.332.409 4.5 1.253m0-13C13.168 5.409 14.828 5 16.5 5s3.332.409 4.5 1.253v13C19.832 18.409 18.172 18 16.5 18s-3.332-.409-4.5-1.253" />
-                </svg>
+                <Icon name="mdi:auto-awesome" class="w-6 h-6" is:inline/>
               </div>
               <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ganancias</h2>
             </div>
-            <!-- Contenedor para los valores de las monedas -->
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-usd">$0.00 USD</p>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="ganancias-ves">Bs.0.00 VES</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="profits-usd">$0.00</p>
           </div>
         </div>
+
+        <!-- Separador -->
+        <hr class="my-8 border-gray-300" />
+
+        <!-- Contenedor total para bolívares -->
+        <p class="text-2xl font-semibold text-teal-700 text-center m-4">Totales en Bolivares</p>
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-6 p-3 shadow-2xl rounded-2xl bg-gray-200">
+          <!-- Tarjeta de income en VES -->
+          <div class="bg-indigo-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+            <div class="flex items-center mb-2">
+              <div class="bg-indigo-200 text-indigo-800 p-3 rounded-full mr-3">
+                <Icon name="mdi:attach-money" class="w-6 h-6" is:inline/>
+              </div>
+              <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ingresos</h2>
+            </div>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="income-ves">Bs.0.00</p>
+            <p class="text-sm text-teal-700 mt-2"> = <span id="income-ves-usd" class="font-semibold">$0.00</span> USD</p>
+          </div>
+
+          <!-- Tarjeta expense VES -->
+          <div class="bg-rose-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+            <div class="flex items-center mb-2">
+              <div class="bg-rose-200 text-rose-800 p-3 rounded-full mr-3">
+                <Icon name="mdi:hand-extended" class="w-6 h-6" is:inline/>
+              </div>
+              <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Gastos</h2>
+            </div>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="expense-ves">Bs.0.00</p>
+            <p class="text-sm text-teal-700 mt-2"> = <span id="expense-ves-usd" class="font-semibold">$0.00</span> USD</p>
+          </div>
+
+          <!-- Tarjeta profits VES -->
+          <div class="bg-teal-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+            <div class="flex items-center mb-2">
+              <div class="bg-teal-200 text-teal-800 p-3 rounded-full mr-3">
+                <Icon name="mdi:auto-awesome" class="w-6 h-6" is:inline/>
+              </div>
+              <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ganancias</h2>
+            </div>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="profits-ves">Bs.0.00</p>
+            <p class="text-sm text-teal-700 mt-2"> = <span id="profits-ves-usd" class="font-semibold">$0.00</span> USD</p>
+          </div>
+        </div>
+
       </div>
     </main>
 
@@ -90,12 +126,15 @@ import Layout from "../layouts/Layout.astro";
   import accountsModule, { accounts } from "../features/accounts/accounts.module";
   import transactionsModule, { transactions } from "../features/transactions/transactions.module";
 
-    const ingresosUsdEl = document.getElementById('ingresos-usd');
-    const ingresosVesEl = document.getElementById('ingresos-ves');
-    const gastosUsdEl = document.getElementById('gastos-usd');
-    const gastosVesEl = document.getElementById('gastos-ves');
-    const gananciasUsdEl = document.getElementById('ganancias-usd');
-    const gananciasVesEl = document.getElementById('ganancias-ves');
+    const incomeUsdEl = document.getElementById('income-usd');
+    const incomeVesEl = document.getElementById('income-ves');
+    const expenseUsdEl = document.getElementById('expense-usd');
+    const expenseVesEl = document.getElementById('expense-ves');
+    const profitsUsdEl = document.getElementById('profits-usd');
+    const profitsVesEl = document.getElementById('profits-ves');
+    const vesToDollarIncome = document.getElementById('income-ves-usd');
+    const vesToDollarExpense = document.getElementById('expense-ves-usd');
+    const vesToDollarProfits = document.getElementById('profits-ves-usd');
     const usdVesRateEl = document.getElementById('usd-ves-rate');
     const usdVesTextEl = document.getElementById('usd-ves-text');
     const updateDateEl = document.getElementById('update-date');
@@ -109,16 +148,14 @@ import Layout from "../layouts/Layout.astro";
  * @returns {Object} An object with the totals.
  */
 const calculateTotals = (transactions, accounts) => {
-    let totalIngresosUsd = 0;
-    let totalGastosUsd = 0;
-    let totalIngresosVes = 0;
-    let totalGastosVes = 0;
+    let totalincomeUsd = 0;
+    let totalexpenseUsd = 0;
+    let totalincomeVes = 0;
+    let totalexpenseVes = 0;
 
     // Iterate over each transaction
     transactions.forEach(transaction => {
-        const account = accounts.find(acc => acc.id === transaction.account_id);
-        console.log(transaction, account); // Debugging line
-                
+        const account = accounts.find(acc => acc.id === transaction.account_id);                
         
         if (account) {
             const amount = Number(transaction.amount);
@@ -126,73 +163,83 @@ const calculateTotals = (transactions, accounts) => {
             if (account.currency === 'USD') {
               
                 if (transaction.type === 'income') {
-                    totalIngresosUsd += amount;
+                    totalincomeUsd += amount;
                 } else if (transaction.type === 'expense') {
-                    totalGastosUsd += amount;
+                    totalexpenseUsd += amount;
                 }
             } else if (account.currency === 'VES') {
                 if (transaction.type === 'income') {
-                    totalIngresosVes += amount;
+                    totalincomeVes += amount;
                 } else if (transaction.type === 'expense') {
-                    totalGastosVes += amount;
+                    totalexpenseVes += amount;
                 }
             }
         }
     });
 
-    const totalGananciasUsd = totalIngresosUsd - totalGastosUsd;
-    const totalGananciasVes = totalIngresosVes - totalGastosVes;
-
+    const totalprofitsUsd = totalincomeUsd - totalexpenseUsd;
+    const totalprofitsVes = totalincomeVes - totalexpenseVes;
+    
     return {
-        ingresosUsd: totalIngresosUsd,
-        gastosUsd: totalGastosUsd,
-        gananciasUsd: totalGananciasUsd,
-        ingresosVes: totalIngresosVes,
-        gastosVes: totalGastosVes,
-        gananciasVes: totalGananciasVes,
+        incomeUsd: totalincomeUsd,
+        expenseUsd: totalexpenseUsd,
+        profitsUsd: totalprofitsUsd,
+        incomeVes: totalincomeVes,
+        expenseVes: totalexpenseVes,
+        profitsVes: totalprofitsVes,
+      };
     };
-};
-
+    
     /**
      * Updates all dashboard elements with financial data.
      * @param {Object} totals - The object with total income, expenses, and profits.
      * @param {number} dolarToday - The current USD to VES exchange rate.
      */
     const updateDashboard = (totals, dolarToday) => {
-        // Update HTML elements with calculated values
-        ingresosUsdEl.textContent = `$${totals.ingresosUsd.toFixed(2)} USD`;
-        ingresosVesEl.textContent = `Bs.${totals.ingresosVes.toFixed(2)} VES`;
-        gastosUsdEl.textContent = `$${totals.gastosUsd.toFixed(2)} USD`;
-        gastosVesEl.textContent = `Bs.${totals.gastosVes.toFixed(2)} VES`;
-        gananciasUsdEl.textContent = `$${totals.gananciasUsd.toFixed(2)} USD`;
-        gananciasVesEl.textContent = `Bs.${totals.gananciasVes.toFixed(2)} VES`;
+      // Update HTML elements with calculated values
+      incomeUsdEl.textContent = `$${totals.incomeUsd.toFixed(2)} USD`;
+      incomeVesEl.textContent = `Bs.${totals.incomeVes.toFixed(2)} VES`;
+      expenseUsdEl.textContent = `$${totals.expenseUsd.toFixed(2)} USD`;
+      expenseVesEl.textContent = `Bs.${totals.expenseVes.toFixed(2)} VES`;
+      profitsUsdEl.textContent = `$${totals.profitsUsd.toFixed(2)} USD`;
+      profitsVesEl.textContent = `Bs.${totals.profitsVes.toFixed(2)} VES`;
+      
+      const conversionIncome = totals.incomeVes / dolarToday;
+      const conversionExpense = totals.expenseVes / dolarToday;
+      const conversionProfits = totals.profitsVes / dolarToday;
+       
+      vesToDollarIncome.textContent = `${conversionIncome.toFixed(2)}`;
+      vesToDollarExpense.textContent = `${conversionExpense.toFixed(2)}`;
+      vesToDollarProfits.textContent = `${conversionProfits.toFixed(2)}`;
 
-        // Update the dollar rate
-        usdVesRateEl.textContent = `Bs.${dolarToday.toFixed(2)}`;
-        usdVesTextEl.textContent = `${dolarToday.toFixed(2)}`;
-
-        // Update the date
-        const today = new Date();
-        updateDateEl.textContent = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
-
-        // If the chart already exists, destroy it to avoid overlaps
-        if (myChart) {
-            myChart.destroy();
-        }
+      
+      // Update the dollar rate
+      usdVesRateEl.textContent = `Bs.${dolarToday.toFixed(2)}`;
+      usdVesTextEl.textContent = `${dolarToday.toFixed(2)}`;
+      
+      
+      // Update the date
+      const today = new Date();
+      updateDateEl.textContent = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      
+      // If the chart already exists, destroy it to avoid overlaps
+      if (myChart) {
+        myChart.destroy();
+      }
 
         const data = {
-            labels: ['Ingresos', 'Gastos', 'Ganancias'],
+            labels: ['income', 'expense', 'profits'],
             datasets: [
                 {
                     label: 'Resumen (USD)',
-                    data: [totals.ingresosUsd, totals.gastosUsd, totals.gananciasUsd],
+                    data: [totals.incomeUsd, totals.expenseUsd, totals.profitsUsd],
                     backgroundColor: ['#4f39f6', '#c70036', '#00bba7'],
                     borderColor: ['#4f39f6', '#c70036', '#00bba7'],
                     borderWidth: 1
                 },
                 {
                     label: 'Resumen (VES)',
-                    data: [totals.ingresosVes, totals.gastosVes, totals.gananciasVes],
+                    data: [totals.incomeVes, totals.expenseVes, totals.profitsVes],
                     backgroundColor: ['#8e7bff', '#ff6384', '#66d9d0'],
                     borderColor: ['#8e7bff', '#ff6384', '#66d9d0'],
                     borderWidth: 1
@@ -221,7 +268,7 @@ const calculateTotals = (transactions, accounts) => {
                     },
                     title: {
                         display: true,
-                        text: 'Comparación de Ingresos, Gastos y Ganancias'
+                        text: 'Comparación de income, expense y profits'
                     }
                 }
             },

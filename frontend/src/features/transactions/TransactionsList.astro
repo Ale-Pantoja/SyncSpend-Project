@@ -93,8 +93,8 @@ import { Icon } from 'astro-icon/components';
 
 <script>
     // @ts-nocheck
-    import transactionsModule, { transactions } from "./transactions.module";
-    import accountsModule, { accounts } from '../accounts/accounts.module';
+    import transactionsModule, { transactions } from "./transactions.module.js";
+    import accountsModule, { accounts } from "../accounts/accounts.module.js";
     
     // Elementos del DOM
     const filterModalBtn = document.getElementById('filter-modal-btn');
@@ -206,50 +206,46 @@ import { Icon } from 'astro-icon/components';
 
         if (descriptionInput.hasAttribute('readonly')) {
             descriptionInput.removeAttribute('readonly');
-                    dateInput.removeAttribute('readonly');
-                    amountInput.removeAttribute('readonly');
+            dateInput.removeAttribute('readonly');
+            amountInput.removeAttribute('readonly');
 
-                    // Reemplazar el span del tipo por un select
-                    const typeSelect = document.createElement('select');
-                    typeSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
-                    typeSelect.setAttribute('data-field', 'type-select');
-                    const incomeOption = document.createElement('option');
-                    incomeOption.value = 'income';
-                    incomeOption.textContent = 'Ingreso';
-                    typeSelect.appendChild(incomeOption);
-                    const expenseOption = document.createElement('option');
-                    expenseOption.value = 'expense';
-                    expenseOption.textContent = 'Gasto';
-                    typeSelect.appendChild(expenseOption);
-                    if (typeSpan.textContent === 'Ingreso') {
-                        typeSelect.value = 'income';
-                    } else {
-                        typeSelect.value = 'expense';
-                    }
-                    typeContainer.replaceChild(typeSelect, typeSpan);
+            const typeSelect = document.createElement('select');
+            typeSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+            typeSelect.setAttribute('data-field', 'type-select');
+            const incomeOption = document.createElement('option');
+            incomeOption.value = 'income';
+            incomeOption.textContent = 'Ingreso';
+            typeSelect.appendChild(incomeOption);
+            const expenseOption = document.createElement('option');
+            expenseOption.value = 'expense';
+            expenseOption.textContent = 'Gasto';
+            typeSelect.appendChild(expenseOption);
+                if (typeSpan.textContent === 'Ingreso') {
+                    typeSelect.value = 'income';
+                } else {
+                    typeSelect.value = 'expense';
+                }
+                typeContainer.replaceChild(typeSelect, typeSpan);
 
-                    // Crear el select para cuentas correctamente
-                    const accountSelect = document.createElement('select');
-                    accountSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
-                    accountSelect.setAttribute('data-field', 'account-select');
-                    currentAccounts.forEach(account => {
-                        const option = document.createElement('option');
-                        option.value = account.id;
-                        option.textContent = account.name;
-                        accountSelect.appendChild(option);
-                    });
+            const accountSelect = document.createElement('select');
+            accountSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+            accountSelect.setAttribute('data-field', 'account-select');
+            currentAccounts.forEach(account => {
+                 const option = document.createElement('option');
+                 option.value = account.id;
+                 option.textContent = account.name;
+                 accountSelect.appendChild(option);
+                });
 
-                    // Asignar el valor actual según la transacción
-                    const originalTransaction = currentTransactions.find(t => String(t.id) === transactionId);
-                    if (originalTransaction) {
-                        accountSelect.value = originalTransaction.accountId;
-                    }
+            const originalTransaction = currentTransactions.find(t => String(t.id) === transactionId);
+            if (originalTransaction) {
+                accountSelect.value = String(originalTransaction.accountId);
+            }
 
-                    // Reemplazar el span actual por el select
-                    accountContainer.replaceChild(accountSelect, accountSpan);
+            accountContainer.replaceChild(accountSelect, accountSpan);
 
-                    editIcon.classList.add('hidden');
-                    saveIcon.classList.remove('hidden');
+            editIcon.classList.add('hidden');
+            saveIcon.classList.remove('hidden');
         } else {
             // Modo guardar
             descriptionInput.setAttribute('readonly', true);
@@ -270,12 +266,17 @@ import { Icon } from 'astro-icon/components';
 
             const selectedAccountId = Number(accountSelect.value);
             const selectedAccount = currentAccounts.find(acc => acc.id === selectedAccountId);
-            const accountNameText = selectedAccount ? selectedAccount.name : '';
+            const accountNameText = selectedAccount ? selectedAccount.name : 'Cuenta no encontrada';
 
             const newAccountSpan = document.createElement('span');
             newAccountSpan.setAttribute('data-field', 'accountName');
             newAccountSpan.textContent = accountNameText;
             accountContainer.replaceChild(newAccountSpan, accountSelect);
+
+            if (!accountSelect.value && currentAccounts.length > 0) {
+                accountSelect.value = String(currentAccounts[0].id);
+            }
+
 
             editIcon.classList.remove('hidden');
             saveIcon.classList.add('hidden');
@@ -289,6 +290,10 @@ import { Icon } from 'astro-icon/components';
                 accountId: selectedAccountId,
                 account_name: accountNameText,
             };
+
+            console.log('accountSelect value:', accountSelect.value);
+            console.log('selectedAccount:', selectedAccount);
+
 
             await transactionsModule.updateTransaction(updatedTransaction);
             // console.log(updatedTransaction);

@@ -1,6 +1,7 @@
 import { atom } from "nanostores";
 import { createNotification } from "../notifications/notificiation.js";
 import { BACK_ENDPOINT } from "../../config/endpoints.js";
+import accountsModule, { accounts } from "../accounts/accounts.module.js";
 import ky from "ky";
 const BASE_URL = `${BACK_ENDPOINT}/api/transactions`;
 
@@ -32,9 +33,19 @@ export const transactions = atom(transactionsArray);
 */
 const addTransaction = async (transactionToCreate) => {
   try {
-    const transactionCreated = await ky.post(BASE_URL, {json: transactionToCreate, credentials: 'include'}).json();
-    transactions.set(transactions.get().concat(transactionCreated));
-    createNotification({title: 'Transaccion creada!',type: 'success'});
+    const newTransaction = await ky.post(BASE_URL, {
+      json: transactionToCreate,
+      credentials: 'include',
+    }).json();
+    transactions.set([...transactions.get(), newTransaction]);
+    
+    await accountsModule.getAccount();
+
+    createNotification({
+      title: 'Nueva transaccion agregada',
+      description: `${newTransaction.description}`,
+      type: 'success',
+    });
   } catch (error) {
     console.log(error);
     const errorData = await error.response.json();
@@ -56,6 +67,9 @@ const removeTransaction = async (id) => {
   try {
     const transactionDeleted = await ky.delete(url, { credentials: 'include'}).json();
     transactions.set(transactions.get().filter(transaction => transaction.id !== transactionDeleted.id));
+
+    await accountsModule.getAccount();
+
     createNotification({
       title: 'Transaccion eliminada',
       description: `${transactionDeleted.name}`,
@@ -87,11 +101,15 @@ const updateTransaction = async (transactionToUpdate) => {
         return transaction;
       }
     }));
-     createNotification({
+    
+    createNotification({
       title: 'transaccion actualizada',
       description: `${transaccionUpdated.description}`,
       type: 'success'
     });
+    
+    await accountsModule.getAccount();
+    
   } catch (error) {
     console.log(error);
     const errorData = await error.response.json();
