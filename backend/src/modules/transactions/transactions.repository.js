@@ -23,8 +23,16 @@ const addOne = async (payload) => {
     const transactionResponse = await client.query(
       `
       INSERT INTO transactions (description, date, type, amount, account_id, user_id)
-      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
-    `,
+      VALUES ($1, $2, $3, $4, $5, $6) 
+      RETURNING 
+        transactions.id,
+        transactions.description,
+        transactions.date,
+        transactions.type,
+        transactions.amount,
+        transactions.account_id,
+        (SELECT name FROM accounts WHERE id = transactions.account_id) AS account_name
+      `,
       [payload.description, payload.date, payload.type, payload.amount, payload.accountId, payload.userId],
     );
     const newTransaction = transactionResponse.rows[0];
