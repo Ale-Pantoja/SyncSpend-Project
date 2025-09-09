@@ -12,7 +12,6 @@ const BASE_URL = `${BACK_ENDPOINT}/api/transactions`;
   * @property {string} id El id de la transaccion
   * @property {string} description El nombre de la transaccion
   * @property {string} date La fecha de la transaccion
-  * @property {string} type El tipo de la transaccion
   * @property {string} amount El monto de la transaccion
   * @property {number} accountId La cuenta utilizada de la transaccion
 */

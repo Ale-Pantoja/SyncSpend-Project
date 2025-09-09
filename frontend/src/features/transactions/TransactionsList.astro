@@ -239,7 +239,7 @@ import { Icon } from 'astro-icon/components';
 
             const originalTransaction = currentTransactions.find(t => String(t.id) === transactionId);
             if (originalTransaction) {
-                accountSelect.value = String(originalTransaction.accountId);
+                accountSelect.value = String(originalTransaction.account_id);
             }
 
             accountContainer.replaceChild(accountSelect, accountSpan);
