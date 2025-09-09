@@ -42,7 +42,7 @@ import { Icon } from 'astro-icon/components';
 
     <!-- Contenedor Lista de Transacciones -->
     <div id="transaction-list-container" class="overflow-x-auto rounded-lg overflow-y-auto flex-grow">
-        <table class="min-w-full divide-y divide-gray-200">
+        <table class="hidden md:table min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50 sticky top-0">
                 <tr>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descripción</th>
@@ -55,8 +55,9 @@ import { Icon } from 'astro-icon/components';
                     </th>
                 </tr>
             </thead>
-            <tbody id="transaction-list-body" class="bg-white divide-y divide-gray-200">
-                <template id="transaction-item-template">
+            \\ listado Transacciones para pc/laptop
+            <tbody id="transaction-list-body-table" class="bg-white divide-y divide-gray-200">
+                <template id="transaction-item-template-table">
                     <tr class="hover:bg-gray-100 transition-colors duration-200">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             <input type="text" data-field="description" class="bg-transparent border-0 p-0 m-0 w-full focus:outline-none" readonly />
@@ -88,6 +89,41 @@ import { Icon } from 'astro-icon/components';
                 </template>
             </tbody>
         </table>
+        listado Transacciones para Celular
+        <div id="transaction-list-body-cards" class="grid grid-cols-1 gap-4 md:hidden">
+            <template id="transaction-item-template-card">
+                <div class="bg-white p-4 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="font-bold text-lg text-gray-900" data-field="description"></div>
+                            <div class="text-sm text-gray-500" data-field="date"></div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full" data-field="amount-container">
+                                <span data-field="amount"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <span class="font-medium">Tipo:</span>
+                        <span data-field="type"></span>
+                    </div>
+                    <div class="mt-1 text-sm text-gray-500">
+                        <span class="font-medium">Cuenta:</span>
+                        <span data-field="accountName"></span>
+                    </div>
+                    <div class="mt-4 flex justify-end gap-2">
+                        <button class="edit-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-teal-700">
+                            <Icon name="mdi:pencil-circle" class="w-6 h-6" is:inline/>
+                            <Icon name="mdi:pencil" class="w-6 h-6 hidden" is:inline/>
+                        </button>
+                        <button class="delete-btn w-8 h-8 flex justify-center items-center text-gray-600 hover:text-red-600">
+                            <Icon name="mdi:trash-can-outline" class="w-6 h-6" is:inline/>
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
     </div>
 </div>
 
@@ -100,12 +136,14 @@ import { Icon } from 'astro-icon/components';
     const filterModalBtn = document.getElementById('filter-modal-btn');
     const filtersContainer = document.getElementById('filters-container');
     const filterResult = document.getElementById('filter-result');
-    const transactionListBody = document.getElementById('transaction-list-body');
+    const transactionListBodyTable = document.getElementById('transaction-list-body-table');
+    const transactionListBodyCards = document.getElementById('transaction-list-body-cards');
     const filterDescriptionInput = document.getElementById('filter-description');
     const filterDateInput = document.getElementById('filter-date');
     const filterTypeSelect = document.getElementById('filter-type');
     const filterAccountSelect = document.getElementById('filter-account');
-    const transactionItemTemplate = document.getElementById('transaction-item-template');
+    const transactionItemTemplateTable = document.getElementById('transaction-item-template-table');
+    const transactionItemTemplateCard = document.getElementById('transaction-item-template-card');
     
     // Variables de estado
     let currentTransactions = [];
@@ -113,37 +151,48 @@ import { Icon } from 'astro-icon/components';
     
     // Función para renderizar las transacciones en el DOM
     const renderTransactions = (filteredTransactions) => {
-        // Limpia el contenido actual de la tabla
-        transactionListBody.innerHTML = '';
+        // Limpia el contenido actual de las tablas y tarjetas
+        transactionListBodyTable.innerHTML = '';
+        transactionListBodyCards.innerHTML = '';
 
         if (filteredTransactions.length === 0) {
-            transactionListBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No se encontraron transacciones.</td></tr>';
+            transactionListBodyTable.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-gray-500">No se encontraron transacciones.</td></tr>';
+            transactionListBodyCards.innerHTML = '<div class="p-4 text-center text-gray-500">No se encontraron transacciones.</div>';
             return;
-        }     
+        }    
         
         filteredTransactions.forEach(transaction => {
-            // Encuentra el nombre de la cuenta usando el ID de la transacción
             const formattedType = transaction.type === 'income' ? 'Ingreso' : 'Gasto';
             const typeColor = transaction.type === 'income' ? 'text-green-600' : 'text-red-600';
             
-            // Clonamos el template para crear una nueva fila
-            const row = transactionItemTemplate.content.cloneNode(true).firstElementChild;
-            row.id = transaction.id;         
+            // Renderiza la fila en la tabla
+            const tableRow = transactionItemTemplateTable.content.cloneNode(true).firstElementChild;
+            tableRow.id = transaction.id;    
 
-            // Asignamos los valores a los inputs y spans
-            row.querySelector('input[data-field="description"]').value = transaction.description;
-            row.querySelector('input[data-field="date"]').value = transaction.date.split('T')[0];
-            row.querySelector('span[data-field="type"]').textContent = formattedType;
-            row.querySelector('span[data-field="type"]').classList.add(typeColor);
-            row.querySelector('input[data-field="amount"]').value = transaction.amount;
-            row.querySelector('span[data-field="accountName"]').textContent = transaction.account_name;
-            row.querySelector('span[data-field="accountName"]').dataset.accountId = transaction.accountId;
+            tableRow.querySelector('input[data-field="description"]').value = transaction.description;
+            tableRow.querySelector('input[data-field="date"]').value = transaction.date.split('T')[0];
+            tableRow.querySelector('span[data-field="type"]').textContent = formattedType;
+            tableRow.querySelector('span[data-field="type"]').classList.add(typeColor);
+            tableRow.querySelector('input[data-field="amount"]').value = transaction.amount;
+            tableRow.querySelector('span[data-field="accountName"]').textContent = transaction.account_name;
+            tableRow.querySelector('span[data-field="accountName"]').dataset.accountId = transaction.accountId;
             
-            // Adjuntamos la nueva fila a la tabla
-            transactionListBody.appendChild(row);
-            // console.log(row);
+            transactionListBodyTable.appendChild(tableRow);
+
+            // Renderiza la tarjeta
+            const card = transactionItemTemplateCard.content.cloneNode(true).firstElementChild;
+            card.id = transaction.id;
+
+            card.querySelector('[data-field="description"]').textContent = transaction.description;
+            card.querySelector('[data-field="date"]').textContent = transaction.date.split('T')[0];
+            card.querySelector('[data-field="type"]').textContent = formattedType;
+            card.querySelector('[data-field="amount"]').textContent = transaction.amount;
+            card.querySelector('[data-field="accountName"]').textContent = transaction.account_name;
             
-            
+            const amountContainer = card.querySelector('[data-field="amount-container"]');
+            amountContainer.classList.add(transaction.type === 'income' ? 'bg-green-100' : 'bg-red-100', transaction.type === 'income' ? 'text-green-800' : 'text-red-800');
+
+            transactionListBodyCards.appendChild(card);
         });
     };
 
@@ -154,7 +203,7 @@ import { Icon } from 'astro-icon/components';
         const descriptionFilter = filterDescriptionInput.value.toLowerCase();
         const dateFilter = filterDateInput.value;
         const typeFilter = filterTypeSelect.value;
-        const accountFilter = filterAccountSelect.value;        
+        const accountFilter = filterAccountSelect.value;      
 
         if (descriptionFilter) {
             filteredTransactions = filteredTransactions.filter(t => t.description.toLowerCase().includes(descriptionFilter));
@@ -178,131 +227,259 @@ import { Icon } from 'astro-icon/components';
         
     };
     
-    transactionListBody.addEventListener('click', async (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        const editBtn = e.target.closest('.edit-btn');
+    // Escuchar clics en ambos contenedores (tabla y tarjetas)
+    const transactionListElements = [transactionListBodyTable, transactionListBodyCards];
+    
+    transactionListElements.forEach(element => {
+        element.addEventListener('click', async (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            const editBtn = e.target.closest('.edit-btn');
 
-        if (deleteBtn) {
-            const row = deleteBtn.closest('tr');
-            if (row) {
-                const transactionId = row.id;
-                await transactionsModule.removeTransaction(transactionId);
-            }
-        }
-
-        if (editBtn) {
-    const row = editBtn.closest('tr');
-    if (row) {
-        const transactionId = row.id;
-        const descriptionInput = row.querySelector('input[data-field="description"]');
-        const dateInput = row.querySelector('input[data-field="date"]');
-        const amountInput = row.querySelector('input[data-field="amount"]');
-        const typeContainer = row.querySelector('[data-field="type-container"]');
-        const typeSpan = typeContainer.querySelector('[data-field="type"]');
-        const accountContainer = row.querySelector('[data-field="accountName-container"]');
-        const accountSpan = accountContainer.querySelector('[data-field="accountName"]');
-        const saveIcon = editBtn.children[1];
-        const editIcon = editBtn.children[0];
-
-        if (descriptionInput.hasAttribute('readonly')) {
-            // Modo editar
-            descriptionInput.removeAttribute('readonly');
-            dateInput.removeAttribute('readonly');
-            amountInput.removeAttribute('readonly');
-
-            const typeSelect = document.createElement('select');
-            typeSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
-            typeSelect.setAttribute('data-field', 'type-select');
-            const incomeOption = document.createElement('option');
-            incomeOption.value = 'income';
-            incomeOption.textContent = 'Ingreso';
-            typeSelect.appendChild(incomeOption);
-            const expenseOption = document.createElement('option');
-            expenseOption.value = 'expense';
-            expenseOption.textContent = 'Gasto';
-            typeSelect.appendChild(expenseOption);
-                if (typeSpan.textContent === 'Ingreso') {
-                    typeSelect.value = 'income';
-                } else {
-                    typeSelect.value = 'expense';
+            if (deleteBtn) {
+                const row = deleteBtn.closest('tr') || deleteBtn.closest('.bg-white');
+                if (row) {
+                    const transactionId = row.id;
+                    await transactionsModule.removeTransaction(transactionId);
                 }
-                typeContainer.replaceChild(typeSelect, typeSpan);
-
-            const accountSelect = document.createElement('select');
-            accountSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
-            accountSelect.setAttribute('data-field', 'account-select');
-            currentAccounts.forEach(account => {
-                 const option = document.createElement('option');
-                 option.value = account.id;
-                 option.textContent = account.name;
-                 accountSelect.appendChild(option);
-                });
-
-            const originalTransaction = currentTransactions.find(t => String(t.id) === transactionId);
-            if (originalTransaction) {
-                accountSelect.value = String(originalTransaction.account_id);
             }
 
-            accountContainer.replaceChild(accountSelect, accountSpan);
+            if (editBtn) {
+                const item = editBtn.closest('tr') || editBtn.closest('.bg-white');
+                if (item) {
+                    const transactionId = item.id;
+                    const isCard = item.classList.contains('bg-white');
 
-            editIcon.classList.add('hidden');
-            saveIcon.classList.remove('hidden');
-        } else {
-            // Modo guardar
-            descriptionInput.setAttribute('readonly', true);
-            dateInput.setAttribute('readonly', true);
-            amountInput.setAttribute('readonly', true);
+                    if (isCard) {
+                        // Lógica para tarjetas
+                        const cardDescriptionSpan = item.querySelector('[data-field="description"]');
+                        const cardDateSpan = item.querySelector('[data-field="date"]');
+                        const cardTypeSpan = item.querySelector('[data-field="type"]');
+                        const cardAmountSpan = item.querySelector('[data-field="amount"]');
+                        const cardAccountNameSpan = item.querySelector('[data-field="accountName"]');
+                        
+                        const saveIcon = editBtn.children[1];
+                        const editIcon = editBtn.children[0];
 
-            const typeSelect = typeContainer.querySelector('[data-field="type-select"]');
-            const accountSelect = accountContainer.querySelector('[data-field="account-select"]');
+                        if (cardDescriptionSpan.tagName === 'DIV') { // Verifica si ya está en modo "display"
+                            // Modo editar
+                            const originalTransaction = currentTransactions.find(t => String(t.id) === transactionId);
+                            
+                            // Crea los inputs y selects
+                            const descriptionInput = document.createElement('input');
+                            descriptionInput.type = 'text';
+                            descriptionInput.value = originalTransaction.description;
+                            descriptionInput.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            descriptionInput.setAttribute('data-field', 'description');
+                            
+                            const dateInput = document.createElement('input');
+                            dateInput.type = 'date';
+                            dateInput.value = originalTransaction.date.split('T')[0];
+                            dateInput.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            dateInput.setAttribute('data-field', 'date');
+                            
+                            const typeSelect = document.createElement('select');
+                            typeSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            typeSelect.setAttribute('data-field', 'type');
+                            const incomeOption = document.createElement('option');
+                            incomeOption.value = 'income';
+                            incomeOption.textContent = 'Ingreso';
+                            typeSelect.appendChild(incomeOption);
+                            const expenseOption = document.createElement('option');
+                            expenseOption.value = 'expense';
+                            expenseOption.textContent = 'Gasto';
+                            typeSelect.appendChild(expenseOption);
+                            typeSelect.value = originalTransaction.type;
+                            
+                            const amountInput = document.createElement('input');
+                            amountInput.type = 'number';
+                            amountInput.value = originalTransaction.amount;
+                            amountInput.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            amountInput.setAttribute('data-field', 'amount');
+                            
+                            const accountSelect = document.createElement('select');
+                            accountSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            accountSelect.setAttribute('data-field', 'accountName');
+                            currentAccounts.forEach(account => {
+                                const option = document.createElement('option');
+                                option.value = account.id;
+                                option.textContent = account.name;
+                                accountSelect.appendChild(option);
+                            });
+                            accountSelect.value = originalTransaction.account_id;
+                            
+                            // Reemplaza los elementos
+                            cardDescriptionSpan.replaceWith(descriptionInput);
+                            cardDateSpan.replaceWith(dateInput);
+                            cardTypeSpan.replaceWith(typeSelect);
+                            cardAmountSpan.replaceWith(amountInput);
+                            cardAccountNameSpan.replaceWith(accountSelect);
+                            
+                            // Cambia los iconos
+                            editIcon.classList.add('hidden');
+                            saveIcon.classList.remove('hidden');
 
-            const newType = typeSelect.value;
-            const newFormattedType = newType === 'income' ? 'Ingreso' : 'Gasto';
+                        } else {
+                            // Modo guardar
+                            const descriptionInput = item.querySelector('input[data-field="description"]');
+                            const dateInput = item.querySelector('input[data-field="date"]');
+                            const typeSelect = item.querySelector('select[data-field="type"]');
+                            const amountInput = item.querySelector('input[data-field="amount"]');
+                            const accountSelect = item.querySelector('select[data-field="accountName"]');
+                            
+                            // Crea los spans y los reemplaza
+                            const newDescriptionSpan = document.createElement('div');
+                            newDescriptionSpan.className = 'font-bold text-lg text-gray-900';
+                            newDescriptionSpan.setAttribute('data-field', 'description');
+                            newDescriptionSpan.textContent = descriptionInput.value;
+                            
+                            const newDateSpan = document.createElement('div');
+                            newDateSpan.className = 'text-sm text-gray-500';
+                            newDateSpan.setAttribute('data-field', 'date');
+                            newDateSpan.textContent = dateInput.value;
+                            
+                            const newTypeSpan = document.createElement('span');
+                            newTypeSpan.setAttribute('data-field', 'type');
+                            newTypeSpan.textContent = typeSelect.options[typeSelect.selectedIndex].textContent;
+                            
+                            const newAmountSpan = document.createElement('span');
+                            newAmountSpan.setAttribute('data-field', 'amount');
+                            newAmountSpan.textContent = amountInput.value;
+                            
+                            const newAccountSpan = document.createElement('span');
+                            newAccountSpan.setAttribute('data-field', 'accountName');
+                            newAccountSpan.textContent = accountSelect.options[accountSelect.selectedIndex].textContent;
+                            
+                            descriptionInput.replaceWith(newDescriptionSpan);
+                            dateInput.replaceWith(newDateSpan);
+                            typeSelect.replaceWith(newTypeSpan);
+                            amountInput.replaceWith(newAmountSpan);
+                            accountSelect.replaceWith(newAccountSpan);
+                            
+                            editIcon.classList.remove('hidden');
+                            saveIcon.classList.add('hidden');
+                            
+                            const selectedAccountId = Number(accountSelect.value);
+                            const selectedAccount = currentAccounts.find(acc => acc.id === selectedAccountId);
 
-            const newTypeSpan = document.createElement('span');
-            newTypeSpan.setAttribute('data-field', 'type');
-            newTypeSpan.textContent = newFormattedType;
-            newTypeSpan.classList.add(newType === 'income' ? 'text-green-600' : 'text-red-600');
-            typeContainer.replaceChild(newTypeSpan, typeSelect);
+                            const updatedTransaction = {
+                                id: transactionId,
+                                description: descriptionInput.value,
+                                date: new Date(dateInput.value).toISOString(),
+                                amount: Number(amountInput.value),
+                                type: typeSelect.value,
+                                accountId: selectedAccountId,
+                                account_name: selectedAccount.name,
+                            };
+                            
+                            await transactionsModule.updateTransaction(updatedTransaction);
+                        }
 
-            const selectedAccountId = Number(accountSelect.value);
-            const selectedAccount = currentAccounts.find(acc => acc.id === selectedAccountId);
-            const accountNameText = selectedAccount ? selectedAccount.name : 'Cuenta no encontrada';
+                    } else {
+                        // Lógica para la tabla (la que ya tienes)
+                        const descriptionInput = item.querySelector('input[data-field="description"]');
+                        const dateInput = item.querySelector('input[data-field="date"]');
+                        const amountInput = item.querySelector('input[data-field="amount"]');
+                        const typeContainer = item.querySelector('[data-field="type-container"]');
+                        const typeSpan = typeContainer.querySelector('[data-field="type"]');
+                        const accountContainer = item.querySelector('[data-field="accountName-container"]');
+                        const accountSpan = accountContainer.querySelector('[data-field="accountName"]');
+                        const saveIcon = editBtn.children[1];
+                        const editIcon = editBtn.children[0];
+                        
+                        if (descriptionInput.hasAttribute('readonly')) {
+                            // Modo editar
+                            descriptionInput.removeAttribute('readonly');
+                            dateInput.removeAttribute('readonly');
+                            amountInput.removeAttribute('readonly');
 
-            const newAccountSpan = document.createElement('span');
-            newAccountSpan.setAttribute('data-field', 'accountName');
-            newAccountSpan.textContent = accountNameText;
-            accountContainer.replaceChild(newAccountSpan, accountSelect);
+                            const typeSelect = document.createElement('select');
+                            typeSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            typeSelect.setAttribute('data-field', 'type-select');
+                            const incomeOption = document.createElement('option');
+                            incomeOption.value = 'income';
+                            incomeOption.textContent = 'Ingreso';
+                            typeSelect.appendChild(incomeOption);
+                            const expenseOption = document.createElement('option');
+                            expenseOption.value = 'expense';
+                            expenseOption.textContent = 'Gasto';
+                            typeSelect.appendChild(expenseOption);
+                            if (typeSpan.textContent === 'Ingreso') {
+                                typeSelect.value = 'income';
+                            } else {
+                                typeSelect.value = 'expense';
+                            }
+                            typeContainer.replaceChild(typeSelect, typeSpan);
 
-            if (!accountSelect.value && currentAccounts.length > 0) {
-                accountSelect.value = String(currentAccounts[0].id);
+                            const accountSelect = document.createElement('select');
+                            accountSelect.className = 'w-full bg-transparent border-0 p-0 m-0 focus:outline-none';
+                            accountSelect.setAttribute('data-field', 'account-select');
+                            currentAccounts.forEach(account => {
+                                const option = document.createElement('option');
+                                option.value = account.id;
+                                option.textContent = account.name;
+                                accountSelect.appendChild(option);
+                            });
+
+                            const originalTransaction = currentTransactions.find(t => String(t.id) === transactionId);
+                            if (originalTransaction) {
+                                accountSelect.value = String(originalTransaction.account_id);
+                            }
+
+                            accountContainer.replaceChild(accountSelect, accountSpan);
+
+                            editIcon.classList.add('hidden');
+                            saveIcon.classList.remove('hidden');
+                        } else {
+                            // Modo guardar
+                            descriptionInput.setAttribute('readonly', true);
+                            dateInput.setAttribute('readonly', true);
+                            amountInput.setAttribute('readonly', true);
+
+                            const typeSelect = typeContainer.querySelector('[data-field="type-select"]');
+                            const accountSelect = accountContainer.querySelector('[data-field="account-select"]');
+
+                            const newType = typeSelect.value;
+                            const newFormattedType = newType === 'income' ? 'Ingreso' : 'Gasto';
+
+                            const newTypeSpan = document.createElement('span');
+                            newTypeSpan.setAttribute('data-field', 'type');
+                            newTypeSpan.textContent = newFormattedType;
+                            newTypeSpan.classList.add(newType === 'income' ? 'text-green-600' : 'text-red-600');
+                            typeContainer.replaceChild(newTypeSpan, typeSelect);
+
+                            const selectedAccountId = Number(accountSelect.value);
+                            const selectedAccount = currentAccounts.find(acc => acc.id === selectedAccountId);
+                            const accountNameText = selectedAccount ? selectedAccount.name : 'Cuenta no encontrada';
+
+                            const newAccountSpan = document.createElement('span');
+                            newAccountSpan.setAttribute('data-field', 'accountName');
+                            newAccountSpan.textContent = accountNameText;
+                            accountContainer.replaceChild(newAccountSpan, accountSelect);
+
+                            if (!accountSelect.value && currentAccounts.length > 0) {
+                                accountSelect.value = String(currentAccounts[0].id);
+                            }
+
+                            editIcon.classList.remove('hidden');
+                            saveIcon.classList.add('hidden');
+
+                            const updatedTransaction = {
+                                id: transactionId,
+                                description: descriptionInput.value,
+                                date: new Date(dateInput.value).toISOString(),
+                                amount: Number(amountInput.value),
+                                type: newType,
+                                accountId: selectedAccountId,
+                                account_name: accountNameText,
+                            };
+
+                            await transactionsModule.updateTransaction(updatedTransaction);
+                        }
+                    }
+                }
             }
 
-
-            editIcon.classList.remove('hidden');
-            saveIcon.classList.add('hidden');
-
-            const updatedTransaction = {
-                id: transactionId,
-                description: descriptionInput.value,
-                date: new Date(dateInput.value).toISOString(),
-                amount: Number(amountInput.value),
-                type: newType,
-                accountId: selectedAccountId,
-                account_name: accountNameText,
-            };
-
-            console.log('accountSelect value:', accountSelect.value);
-            console.log('selectedAccount:', selectedAccount);
-
-
-            await transactionsModule.updateTransaction(updatedTransaction);
-            // console.log(updatedTransaction);
-
-        }
-    }
-}
-
+        });
     });
 
     // Event listener para el botón de filtros
