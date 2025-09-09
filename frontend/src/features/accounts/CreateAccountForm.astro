@@ -100,7 +100,7 @@
   const formBtn = document.querySelector('#main-account-form-btn');
 
   // Expresión Regular para el nombre
-  const NAME_REGEX = /^[a-zA-Z0-9\s]+$/;
+  const NAME_REGEX = /^(?=.*[a-zA-Z0-9])[a-zA-Z0-9\s]+$/;
 
   // Validaciones del formulario
   let nameValidation = false;

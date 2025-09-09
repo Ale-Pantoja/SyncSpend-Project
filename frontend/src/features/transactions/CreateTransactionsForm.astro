@@ -135,7 +135,7 @@
   const transactionFormBtn = document.querySelector('#main-transaction-form-btn');
   
   // Expresión Regular para la descripción
-  const DESCRIPTION_REGEX = /^[a-zA-Z0-9\s]+$/;
+  const DESCRIPTION_REGEX = /^(?=.*[a-zA-Z0-9])[a-zA-Z0-9\s]+$/;
 
   // Validaciones del formulario
   let descriptionValidation = false;
