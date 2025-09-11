@@ -1,34 +1,27 @@
-# SyncSpend  
-Control total de tus finanzas
+# SyncSpend: Control Total de tus Finanzas
 
-🚀 **Características**  
-SyncSpend es una aplicación diseñada para ayudarte a gestionar y visualizar tus finanzas personales de manera sencilla y eficiente.
+SyncSpend es una aplicación diseñada para ayudarte a gestionar y visualizar tus finanzas de manera sencilla y eficiente. Toma el control de tus ingresos y gastos con una interfaz intuitiva y gráficos claros.
 
-- 📝 **Transacciones:** Agrega, edita y elimina tus transacciones diarias, categorizando cada gasto o ingreso.  
-- 🏦 **Cuentas Asociadas:** Gestiona múltiples cuentas, cada una con su propia moneda y saldo.  
-- 📊 **Gráficos:** Visualiza tus datos financieros de forma clara con gráficos que te muestran ingresos y gastos en una moneda dual.
+## Características Principales
+- **Cuentas Múltiples**: Gestiona diversas cuentas, cada una con su propia moneda y saldo, todo en un solo lugar.
+- **Transacciones**: Añade, edita y elimina tus movimientos diarios. Categoriza cada gasto o ingreso para un análisis detallado.
+- **Gráficos Duales**: Visualiza tus datos financieros de forma clara con gráficos que te muestran ingresos y gastos en una moneda dual, permitiéndote tener una perspectiva completa de tu situación.
 
-💻 **Tecnologías**  
-Este proyecto está construido con herramientas modernas para asegurar un rendimiento óptimo.
+## Tecnologías
+Este proyecto fue construido con las siguientes herramientas modernas para asegurar un rendimiento óptimo y una experiencia de usuario fluida.
 
-### Frontend  
-<img src="https://raw.githubusercontent.com/withastro/astro/main/packages/astro/assets/astro-icon.svg" alt="Astro Logo" width="30" height="30" style="vertical-align:middle"/>  
-**Astro**
+### Frontend
+<div>
+<img src="https://img.shields.io/badge/Astro-0D1117?style=for-the-badge&logo=astro&logoColor=FF5D01" alt="Astro Badge" />  
+<img src="https://img.shields.io/badge/TailwindCSS-0D1117?style=for-the-badge&logo=tailwindcss&logoColor=38B2AC" alt="Tailwind CSS Badge" />
+</div>
 
-<img src="https://tailwindcss.com/_next/static/media/tailwindcss-logotype.446f8b7a6b9c67a4535e44cc7c614720.svg" alt="Tailwind CSS Logo" width="100" height="30" style="vertical-align:middle;margin-left:10px"/>  
-**Tailwind CSS**
+### Backend
+<div>
+<img src="https://img.shields.io/badge/Node.js-0D1117?style=for-the-badge&logo=nodedotjs&logoColor=339933" alt="Node.js Badge" />  
+<img src="https://img.shields.io/badge/PostgreSQL-0D1117?style=for-the-badge&logo=postgresql&logoColor=4169E1" alt="PostgreSQL Badge" />  
+<img src="https://img.shields.io/badge/Supabase-0D1117?style=for-the-badge&logo=supabase&logoColor=3ECF8E" alt="Supabase Badge" />
+</div>
 
-### Backend  
-<img src="https://nodejs.org/static/images/logo.svg" alt="Node.js Logo" width="30" height="30" style="vertical-align:middle"/>  
-**Node.js**
-
-<img src="https://www.postgresql.org/media/img/about/press/elephant.png" alt="PostgreSQL Logo" width="30" height="30" style="vertical-align:middle;margin-left:10px"/>  
-**PostgreSQL**
-
-<img src="https://supabase.com/_next/static/media/supabase-logo.e91c89f9.svg" alt="Supabase Logo" width="30" height="30" style="vertical-align:middle;margin-left:10px"/>  
-**Supabase**
-
-
-🛠️ **Instalación y Uso**  
-Sigue estos pasos para tener una copia local del proyecto y poder ejecutarlo.
-
+## Estado del Proyecto
+Este proyecto está en desarrollo activo. Se esta trabajando para añadir nuevas funcionalidades, mejorar la experiencia de usuario y optimizar el rendimiento. Se agradecen los reportes de errores y las sugerencias para futuras mejoras.
