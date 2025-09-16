@@ -1,0 +1,93 @@
+---
+import AuthProtected from "../features/auth/AuthProtected.astro"
+import CreateAccountForm from "../features/accounts/CreateAccountForm.astro"
+import AccountsList from "../features/accounts/AccountsList.astro"
+import Layout from "../layouts/Layout.astro"
+import CreateTransactionsForm from "../features/transactions/CreateTransactionsForm.astro"
+import TransactionsList from "../features/transactions/TransactionsList.astro"
+---
+<Layout title="SyncSpend">
+  <AuthProtected>
+    <main class="h-[calc(100vh-4rem)] flex flex-col md:flex-row gap-6 p-4 max-w-[90rem] mx-auto">
+      
+      <div class="w-full md:w-1/2 lg:w-3/5 h-full">
+        <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 h-full flex flex-col">
+          <div class="flex flex-col items-center mb-6 gap-4">
+            <h2 class="text-2xl font-semibold text-gray-700">Transacciónes</h2>
+            <button id="add-transaction-btn" class="w-full md:w-3/4 bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-4xl transition-colors duration-200 shadow-md">
+              + Nueva Transacción
+            </button>
+          </div>
+          
+          <div class="flex-grow overflow-y-auto">
+            <TransactionsList/>
+          </div>
+        </div>
+      </div>
+
+      <div class="w-full md:w-1/2 lg:w-2/5 h-full">
+        <div class="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 h-full flex flex-col">
+          <div class="flex flex-col items-center mb-6 gap-4">
+            <h2 class="text-2xl font-semibold text-gray-700">Cuentas</h2>
+            <button id="add-account-btn" class="w-full md:w-3/4 bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-4xl transition-colors duration-200 shadow-md">
+              + Nueva Cuenta
+            </button>
+          </div>
+          <div class="flex-grow overflow-y-auto">
+            <AccountsList/>
+          </div>
+        </div>
+      </div>
+
+      <div id="create-transaction-modal" class="fixed inset-0 z-50 bg-opacity-50 backdrop-blur-xs items-center justify-center p-4 hidden">
+        <CreateTransactionsForm/>
+      </div>
+      
+      <div id="create-account-modal" class="fixed inset-0 z-50 bg-opacity-50 backdrop-blur-xs items-center justify-center p-4 hidden">
+        <CreateAccountForm />
+      </div>
+    </main>
+  </AuthProtected>
+</Layout>
+
+<script>
+  // @ts-nocheck
+  import accountsModule from "../features/accounts/accounts.module";
+  import transactionsModule from "../features/transactions/transactions.module";
+
+  // --- Lógica para mostrar/ocultar el modal de cuentas ---
+  const addAccountBtn = document.getElementById('add-account-btn');
+  const createAccountModal = document.getElementById('create-account-modal');
+  const addTransactionBtn = document.getElementById('add-transaction-btn');
+  const createTransactionModal = document.getElementById('create-transaction-modal');
+
+  addAccountBtn.addEventListener('click', () => {
+    createAccountModal.classList.remove('hidden');
+  });
+  
+  addTransactionBtn.addEventListener('click', () => {
+    createTransactionModal.classList.remove('hidden');
+  });
+
+  // Evento para cerrar el modal de cuenta (ej. al hacer clic fuera del formulario)
+  createAccountModal.addEventListener('click', (e) => {
+    if (e.target.id === 'create-account-modal') {
+      createAccountModal.classList.add('hidden');
+    }
+  });
+
+  if (addTransactionBtn && createTransactionModal) {
+    addTransactionBtn.addEventListener('click', () => {
+      createTransactionModal.classList.remove('hidden');
+    });
+
+    createTransactionModal.addEventListener('click', (e) => {
+      if (e.target.id === 'create-transaction-modal') {
+        createTransactionModal.classList.add('hidden');
+      }
+    });
+  }
+
+  accountsModule.getAccount();
+  transactionsModule.getTransaction();
+</script>

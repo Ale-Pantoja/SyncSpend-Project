@@ -1,0 +1,185 @@
+---
+import AccountItem from "./AccountItem.astro";
+---
+
+<ul id="account-list" class="flex flex-col gap-4 p-6 bg-white rounded-2xl shadow-2xs border border-teal-200 m-4 max-h-72 overflow-y-auto">  
+  <template id="account-item-template">
+    <AccountItem 
+    name="Zelle"
+    currency="VES"
+    balance=120
+    id={0}
+    />
+  </template>
+  
+  
+</ul>
+
+<div id="total-container" class="m-4 flex justify-between items-center rounded-4xl p-3 text-base ring-1 ring-teal-300 transition-colors">
+  <p class="text-base font-medium text-teal-600">Total VES: <span id="totalVES" class="font-normal text-teal-800"></span></p>
+  <p class="text-base font-medium text-teal-600">Total USD: <span id="totalUSD" class="font-normal text-teal-800"></span></p>
+</div>
+
+<div id="button-container" class="flex justify-center">
+  <button id="show-archived-btn" class="w-full md:w-3/4 bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded-4xl transition-colors duration-200 shadow-md">
+    Cuentas Archivadas
+  </button>
+</div>
+
+
+<div id="archived-modal" class="fixed inset-0 z-50 bg-opacity-50 backdrop-blur-xs items-center justify-center p-4 mx-4 hidden content-center">
+  <div class="bg-white p-6 rounded-lg shadow-xl max-w-lg w-full mx-auto mt-20 text-center">
+    <h2 class="text-2xl font-semibold text-gray-700 mb-6">Cuentas Archivadas</h2>
+    <ul id="archived-list" class="flex flex-col gap-4"></ul>
+    <div class="flex justify-center">
+      <button id="close-modal-btn" class="md:w-3/4 mx-auto mt-6 mb-4 bg-rose-500 hover:bg-rose-600 text-white font-medium py-2 px-4 rounded-4xl transition-colors duration-200 shadow-md">Cerrar</button> 
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+// @ts-nocheck
+import { accounts } from "./accounts.module";
+import accountsModule from "./accounts.module.js";
+import ky from "ky";
+import { BACK_ENDPOINT } from "../../config/endpoints";
+
+const accountList = document.querySelector('#account-list');
+const archivedList = document.getElementById('archived-list');
+const accountItemTemplate = document.querySelector('#account-item-template');
+const totalVESElement = document.getElementById('totalVES');
+const totalUSDElement = document.getElementById('totalUSD');
+const showArchivedBtn = document.getElementById('show-archived-btn');
+const closeModalBtn = document.getElementById('close-modal-btn');
+const archivedModal = document.getElementById('archived-modal');
+const BACK_ENDPOINT_ACCOUNTS = `${BACK_ENDPOINT}/api/accounts`;
+
+const renderAccountItem = (account) => {
+  const accountItem = accountItemTemplate.content.cloneNode(true);
+  const li = accountItem.querySelector('li');
+  if (li) {
+    li.id = account.id;
+    li.classList.add('generated-account-item');
+
+    const inputs = li.querySelectorAll('input');
+    inputs[0].value = account.name;
+    inputs[1].value = account.currency;
+    inputs[2].value = account.balance;
+    
+    const actionsDiv = li.querySelector('.flex.gap-2.items-center');
+    if (actionsDiv) {
+      const existingButtons = actionsDiv.querySelectorAll('button:not(.edit-btn)');
+      existingButtons.forEach(btn => btn.remove());
+      
+      const actionBtn = document.createElement('button');
+      actionBtn.classList.add('w-8', 'h-8', 'flex', 'justify-center', 'items-center', 'text-gray-600', 'hover:text-teal-600');
+      
+      if (account.is_active) {
+        actionBtn.classList.add('archive-btn');
+        actionBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" viewBox="0 0 24 24">
+          <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+          <path d="M16 3h-8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"></path>
+        </svg>`;
+      } else {
+        actionBtn.classList.add('unarchive-btn');
+        actionBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>`;
+      }
+      actionsDiv.appendChild(actionBtn);
+    }
+  }
+  return li;
+};
+
+const updateView = (allAccounts) => {
+  const activeAccounts = allAccounts.filter(acc => acc.is_active);
+  const archivedAccounts = allAccounts.filter(acc => !acc.is_active);
+  
+  accountList.querySelectorAll('.generated-account-item').forEach(item => item.remove());
+  archivedList.innerHTML = '';
+  
+  let totalVES = 0;
+  let totalUSD = 0;
+
+  activeAccounts.forEach(account => {
+    accountList.prepend(renderAccountItem(account));
+    if (account.currency === 'VES') {
+      totalVES += Number(account.balance);
+    } else if (account.currency === 'USD') {
+      totalUSD += Number(account.balance);
+    }
+  });
+
+  archivedAccounts.forEach(account => {
+    archivedList.appendChild(renderAccountItem(account));
+  });
+
+  totalVESElement.textContent = totalVES;
+  totalUSDElement.textContent = totalUSD;
+};
+
+accounts.subscribe(updateView);
+
+document.addEventListener('click', async (e) => {
+  const archiveBtn = e.target.closest('.archive-btn');
+  const unarchiveBtn = e.target.closest('.unarchive-btn');
+  const editBtn = e.target.closest('.edit-btn');
+
+  const li = e.target.closest('li');
+  if (!li) return;
+  const accountId = Number(li.id);
+
+  if (archiveBtn) {
+    await accountsModule.updateAccount({ id: accountId, is_active: false });
+  } else if (unarchiveBtn) {
+    await accountsModule.updateAccount({ id: accountId, is_active: true });
+  } else if (editBtn) {
+    const status = li.dataset.status;
+    const accountInputName = li.children[0].children[0];
+    const accountInputCurrency = li.children[0].children[1];
+    const accountInputBalance = li.children[0].children[2];
+
+    if (status === 'inputs-deshabilitados') {
+      accountInputName.removeAttribute('readonly');
+      accountInputCurrency.removeAttribute('readonly');
+      accountInputBalance.removeAttribute('readonly');
+      li.dataset.status = 'inputs-habilitados';
+      editBtn.children[0].classList.add('hidden');
+      editBtn.children[1].classList.remove('hidden');
+    } else if (status === 'inputs-habilitados') {
+      accountInputName.setAttribute('readonly', true);
+      accountInputCurrency.setAttribute('readonly', true);
+      accountInputBalance.setAttribute('readonly', true);
+      li.dataset.status = 'inputs-deshabilitados';
+      editBtn.children[0].classList.remove('hidden');
+      editBtn.children[1].classList.add('hidden');
+      
+      const accountToUpdate = {
+        id: accountId,
+        name: accountInputName.value,
+        currency: accountInputCurrency.value,
+        balance: Number(accountInputBalance.value),
+      };
+      await accountsModule.updateAccount(accountToUpdate);
+    }
+  }
+});
+
+showArchivedBtn.addEventListener('click', () => {
+    archivedModal.classList.remove('hidden');
+});
+
+closeModalBtn.addEventListener('click', () => {
+    archivedModal.classList.add('hidden');
+});
+
+accountsModule.getAccount().then(accountsData => {
+  updateView(accountsData);
+});
+</script>

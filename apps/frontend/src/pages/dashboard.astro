@@ -1,0 +1,363 @@
+---
+import AuthProtected from "../features/auth/AuthProtected.astro";
+import Layout from "../layouts/Layout.astro";
+import { Icon } from 'astro-icon/components';
+---
+
+<Layout title="Dashboard">
+  <AuthProtected>
+    <main class="min-h-[calc(100vh-4rem)] flex flex-col p-4 md:p-8 max-w-[90rem] mx-auto">
+        <div class="w-full max-w-6xl mx-auto p-4 sm:p-6">
+          
+          <!-- Encabezado del Dashboard y Filtro -->
+          <header class="flex flex-col sm:flex-row justify-between items-center mb-6 sm:mb-8 pb-4 border-b border-gray-200">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-700 mb-2 sm:mb-0">Dashboard</h1>
+            
+            <!-- Filtro por mes -->
+            <div class="flex flex-col sm:flex-row justify-end items-center gap-4 w-full sm:w-auto">
+              <label for="month-filter" class="font-semibold text-gray-700">Filtrar por mes:</label>
+              <select id="month-filter" class="rounded-lg p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-teal-500 transition-colors">
+                <option value="all">Todos los meses</option>
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06">Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+            </div>
+          </header>
+          
+          <!-- Sección de Gráfico y Tipo de Cambio -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 sm:mb-8">
+            
+            <!-- Contenedor del Gráfico -->
+            <div class="lg:col-span-2 bg-gray-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-inner flex items-center justify-center">
+              <canvas id="myChart" class="w-full h-56 sm:h-72 md:h-80 lg:h-96"></canvas>
+            </div>
+            
+            <!-- Recuadro del Valor del Dólar -->
+            <div class="lg:col-span-1 bg-white border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center items-center text-center">
+              <h3 class="text-xl sm:text-2xl font-bold text-gray-700 mb-2">Valor del Dólar</h3>
+              <p class="text-gray-600 text-sm sm:text-base">
+                <span id="update-date" class="font-medium"></span>
+              </p>
+              <p class="text-4xl sm:text-5xl font-extrabold text-teal-600 leading-tight my-2" id="usd-ves-rate">Cargando...</p>
+              <p class="text-gray-500 text-sm sm:text-base">1 USD = <span id="usd-ves-text"></span> VES</p>
+            </div>
+          </div>
+          
+          <!-- Separador -->
+          <hr class="my-8 border-gray-300" />
+          
+          <!-- Contenedor principal de las secciones financieras, ahora en grid para evitar scroll -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-3">
+            
+            <!-- Sección de resumen financiero en dólares -->
+            <div class="w-full p-3 custom-shadow rounded-2xl bg-white border border-gray-200">
+              <p class="text-2xl font-semibold text-teal-700 text-center m-4">Totales en Dólares</p>
+              <div class="flex flex-col gap-6">
+                
+                <!-- Tarjeta de income en USD -->
+                <div class="bg-indigo-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                  <div class="flex items-center mb-2">
+                    <div class="bg-indigo-200 text-indigo-800 p-3 rounded-full mr-3">
+                      <Icon name="mdi:attach-money" class="w-6 h-6" is:inline/>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ingresos</h2>
+                  </div>
+                  <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="income-usd">$0.00</p>
+                </div>
+                
+                <!-- Tarjeta expense USD -->
+                <div class="bg-rose-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                  <div class="flex items-center mb-2">
+                    <div class="bg-rose-200 text-rose-800 p-3 rounded-full mr-3">
+                      <Icon name="mdi:hand-extended" class="w-6 h-6" is:inline/>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Gastos</h2>
+                  </div>
+                  <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="expense-usd">$0.00</p>
+                </div>
+                
+                <!-- Tarjeta profits USD -->
+                <div class="bg-teal-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                  <div class="flex items-center mb-2">
+                    <div class="bg-teal-200 text-teal-800 p-3 rounded-full mr-3">
+                      <Icon name="mdi:auto-awesome" class="w-6 h-6" is:inline/>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ganancias</h2>
+                  </div>
+                  <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="profits-usd">$0.00</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sección de resumen financiero en bolívares -->
+            <div class="w-full p-3 custom-shadow rounded-2xl bg-white border border-gray-200">
+              <p class="text-2xl font-semibold text-teal-700 text-center m-4">Totales en Bolívares</p>
+              <div class="flex flex-col gap-6">
+                
+                <!-- Tarjeta de income en VES -->
+                <div class="bg-indigo-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                  <div class="flex items-center mb-2">
+                    <div class="bg-indigo-200 text-indigo-800 p-3 rounded-full mr-3">
+                      <Icon name="mdi:attach-money" class="w-6 h-6" is:inline/>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ingresos</h2>
+                  </div>
+                  <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="income-ves">Bs.0.00</p>
+                  <p class="text-sm text-teal-700 mt-2"> = <span id="income-ves-usd" class="font-semibold">$0.00</span> USD</p>
+                </div>
+                
+                <!-- Tarjeta expense VES -->
+                <div class="bg-rose-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                  <div class="flex items-center mb-2">
+                    <div class="bg-rose-200 text-rose-800 p-3 rounded-full mr-3">
+                      <Icon name="mdi:hand-extended" class="w-6 h-6" is:inline/>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Gastos</h2>
+                  </div>
+                  <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="expense-ves">Bs.0.00</p>
+                  <p class="text-sm text-teal-700 mt-2"> = <span id="expense-ves-usd" class="font-semibold">$0.00</span> USD</p>
+                </div>
+                
+                <!-- Tarjeta profits VES -->
+                <div class="bg-teal-50 border border-gray-200 p-4 sm:p-6 rounded-2xl shadow-xl flex flex-col justify-center">
+                  <div class="flex items-center mb-2">
+                    <div class="bg-teal-200 text-teal-800 p-3 rounded-full mr-3">
+                      <Icon name="mdi:auto-awesome" class="w-6 h-6" is:inline/>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Ganancias</h2>
+                  </div>
+                  <p class="text-2xl sm:text-3xl font-bold text-gray-900" id="profits-ves">Bs.0.00</p>
+                  <p class="text-sm text-teal-700 mt-2"> = <span id="profits-ves-usd" class="font-semibold">$0.00</span> USD</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </main>
+  </AuthProtected>
+</Layout>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // @ts-nocheck
+  import accountsModule, { accounts } from "../features/accounts/accounts.module";
+  import transactionsModule, { transactions } from "../features/transactions/transactions.module";
+
+    const incomeUsdEl = document.getElementById('income-usd');
+    const incomeVesEl = document.getElementById('income-ves');
+    const expenseUsdEl = document.getElementById('expense-usd');
+    const expenseVesEl = document.getElementById('expense-ves');
+    const profitsUsdEl = document.getElementById('profits-usd');
+    const profitsVesEl = document.getElementById('profits-ves');
+    const vesToDollarIncome = document.getElementById('income-ves-usd');
+    const vesToDollarExpense = document.getElementById('expense-ves-usd');
+    const vesToDollarProfits = document.getElementById('profits-ves-usd');
+    const usdVesRateEl = document.getElementById('usd-ves-rate');
+    const usdVesTextEl = document.getElementById('usd-ves-text');
+    const updateDateEl = document.getElementById('update-date');
+    const monthFilter = document.getElementById('month-filter');
+    const ctx = document.getElementById('myChart').getContext('2d');
+    let myChart;
+
+/**
+ * Calculates total income, expenses, and profits in USD and VES.
+ * @param {Array<Object>} transactions - The array of transactions.
+ * @param {Array<Object>} accounts - The array of accounts.
+ * @returns {Object} An object with the totals.
+ */
+const calculateTotals = (transactions, accounts) => {
+    let totalincomeUsd = 0;
+    let totalexpenseUsd = 0;
+    let totalincomeVes = 0;
+    let totalexpenseVes = 0;
+
+    // Iterate over each transaction
+    transactions.forEach(transaction => {
+        const account = accounts.find(acc => acc.id === transaction.account_id);                
+        
+        if (account) {
+            const amount = Number(transaction.amount);
+
+            if (account.currency === 'USD') {
+              
+                if (transaction.type === 'income') {
+                    totalincomeUsd += amount;
+                } else if (transaction.type === 'expense') {
+                    totalexpenseUsd += amount;
+                }
+            } else if (account.currency === 'VES') {
+                if (transaction.type === 'income') {
+                    totalincomeVes += amount;
+                } else if (transaction.type === 'expense') {
+                    totalexpenseVes += amount;
+                }
+            }
+        }
+    });
+
+    const totalprofitsUsd = totalincomeUsd - totalexpenseUsd;
+    const totalprofitsVes = totalincomeVes - totalexpenseVes;
+    
+    return {
+        incomeUsd: totalincomeUsd,
+        expenseUsd: totalexpenseUsd,
+        profitsUsd: totalprofitsUsd,
+        incomeVes: totalincomeVes,
+        expenseVes: totalexpenseVes,
+        profitsVes: totalprofitsVes,
+      };
+    };
+    
+    /**
+     * Updates all dashboard elements with financial data.
+     * @param {Object} totals - The object with total income, expenses, and profits.
+     * @param {number} dolarToday - The current USD to VES exchange rate.
+     */
+    const updateDashboard = (totals, dolarToday) => {
+      // Update HTML elements with calculated values
+      incomeUsdEl.textContent = `$${totals.incomeUsd.toFixed(2)} USD`;
+      incomeVesEl.textContent = `Bs.${totals.incomeVes.toFixed(2)} VES`;
+      expenseUsdEl.textContent = `$${totals.expenseUsd.toFixed(2)} USD`;
+      expenseVesEl.textContent = `Bs.${totals.expenseVes.toFixed(2)} VES`;
+      profitsUsdEl.textContent = `$${totals.profitsUsd.toFixed(2)} USD`;
+      profitsVesEl.textContent = `Bs.${totals.profitsVes.toFixed(2)} VES`;
+      
+      const conversionIncome = totals.incomeVes / dolarToday;
+      const conversionExpense = totals.expenseVes / dolarToday;
+      const conversionProfits = totals.profitsVes / dolarToday;
+       
+      vesToDollarIncome.textContent = `${conversionIncome.toFixed(2)}`;
+      vesToDollarExpense.textContent = `${conversionExpense.toFixed(2)}`;
+      vesToDollarProfits.textContent = `${conversionProfits.toFixed(2)}`;
+
+      
+      // Update the dollar rate
+      usdVesRateEl.textContent = `Bs.${dolarToday.toFixed(2)}`;
+      usdVesTextEl.textContent = `${dolarToday.toFixed(2)}`;
+      
+      
+      // Update the date
+      const today = new Date();
+      updateDateEl.textContent = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+      
+      // If the chart already exists, destroy it to avoid overlaps
+      if (myChart) {
+        myChart.destroy();
+      }
+
+        const data = {
+            labels: ['income', 'expense', 'profits'],
+            datasets: [
+                {
+                    label: 'Resumen (USD)',
+                    data: [totals.incomeUsd, totals.expenseUsd, totals.profitsUsd],
+                    backgroundColor: ['#4f39f6', '#c70036', '#00bba7'],
+                    borderColor: ['#4f39f6', '#c70036', '#00bba7'],
+                    borderWidth: 1
+                },
+                {
+                    label: 'Resumen (VES)',
+                    data: [totals.incomeVes, totals.expenseVes, totals.profitsVes],
+                    backgroundColor: ['#8e7bff', '#ff6384', '#66d9d0'],
+                    borderColor: ['#8e7bff', '#ff6384', '#66d9d0'],
+                    borderWidth: 1
+                }
+            ]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Comparación de income, expense y profits'
+                    }
+                }
+            },
+        };
+
+        myChart = new Chart(ctx, config);
+    };
+
+
+      /**
+     * Applies the month filter and refreshes the dashboard.
+     */
+    const applyFilterAndRefresh = (transactionsData, accountsData, dolarToday) => {
+      const selectedMonth = monthFilter.value;
+      let filteredTransactions = transactionsData;
+
+      if (selectedMonth !== 'all') {
+        filteredTransactions = transactionsData.filter(transaction => {
+          const transactionDate = new Date(transaction.date);
+          const month = (transactionDate.getMonth() + 1).toString().padStart(2, '0');
+          return month === selectedMonth;
+        });
+      }
+
+      const totals = calculateTotals(filteredTransactions, accountsData);
+      updateDashboard(totals, dolarToday);
+    };
+    
+  const initDashboard = async () => {
+        try {
+            // Get accounts and transactions first
+            await accountsModule.getAccount();
+            await transactionsModule.getTransaction();
+
+            const apiUrl = 'https://ve.dolarapi.com/v1/dolares/oficial';
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) {
+                throw new Error(`Error de red: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            const dolarToday = data.promedio; 
+            
+            // Now that data is available, you can call get()
+            const transactionsData = transactions.get();
+            const accountsData = accounts.get(); 
+
+            applyFilterAndRefresh(transactionsData, accountsData, dolarToday);
+
+            monthFilter.addEventListener('change', () => {
+              applyFilterAndRefresh(transactionsData, accountsData, dolarToday);
+            });
+
+        } catch (error) {
+            console.error("Could not get the dollar value:", error);
+            usdVesRateEl.textContent = "Error";
+            usdVesTextEl.textContent = "N/A";
+        }
+    };
+
+    initDashboard();
+</script>
+

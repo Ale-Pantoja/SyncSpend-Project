@@ -1,0 +1,9 @@
+PUT  http://localhost:3000/api/transactions/5
+Content-Type: application/json
+{
+  "description": "editar intento",
+  "date": "2025-10-26T12:00:00Z",
+  "type": "income",
+  "amount": 1,
+  "accountId": 2
+}

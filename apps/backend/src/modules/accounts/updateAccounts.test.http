@@ -1,0 +1,6 @@
+PUT  http://localhost:3000/api/accounts/6
+Content-Type: application/json
+{
+  "name": "BDV",
+  "is_active": false
+}

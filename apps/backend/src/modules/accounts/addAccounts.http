@@ -1,0 +1,7 @@
+POST  http://localhost:3000/api/accounts
+Content-Type: application/json
+{
+  "name": "Zelle",
+  "currency": "USD",
+  "balance": 2345.70
+}
