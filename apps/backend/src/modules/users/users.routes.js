@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import usersRepository from './users.repository.js';
 import jwt from 'jsonwebtoken';
 import nodemailerService from '../../services/nodemailer.js';
-import { endpoint } from '../config/endpoint.js';
+import { endpoint } from '../../config/endpoint.js';
 const usersRouter = express.Router();
 
 usersRouter.post('/', async (req, res) => {
