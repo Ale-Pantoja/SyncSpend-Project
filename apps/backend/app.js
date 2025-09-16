@@ -15,8 +15,7 @@ import path from 'path';
 import { handler as ssrHandler } from './dist/server/entry.mjs';
 const app = express();
 
-app.use(cors({ credentials: true, origin: ['http://localhost:4321'] })); 
-app.use(express.json());
+app.use(cors({ credentials: true, origin: ['http://localhost:4321', 'https://syncspend-project.onrender.com'] }));app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRouter);
