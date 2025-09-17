@@ -1,6 +1,6 @@
 import { renderers } from './renderers.mjs';
 import { c as createExports, s as serverEntrypointModule } from './chunks/_@astrojs-ssr-adapter_BNBmdDWB.mjs';
-import { manifest } from './manifest_BMv2d3BZ.mjs';
+import { manifest } from './manifest_B4LWplF6.mjs';
 
 const serverIslandMap = new Map();;
 
@@ -30,8 +30,8 @@ const _manifest = Object.assign(manifest, {
 });
 const _args = {
     "mode": "middleware",
-    "client": "file:///C:/Users/Windows10%20Lte/Desktop/SyncSpend-Project-main/apps/frontend/dist/client/",
-    "server": "file:///C:/Users/Windows10%20Lte/Desktop/SyncSpend-Project-main/apps/frontend/dist/server/",
+    "client": "file:///C:/Users/EDTecnica/Desktop/SyncSpend-Project-main/apps/frontend/dist/client/",
+    "server": "file:///C:/Users/EDTecnica/Desktop/SyncSpend-Project-main/apps/frontend/dist/server/",
     "host": false,
     "port": 4321,
     "assets": "_astro",
