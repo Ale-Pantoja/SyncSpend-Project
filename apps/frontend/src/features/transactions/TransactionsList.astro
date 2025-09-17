@@ -179,7 +179,7 @@ import { Icon } from 'astro-icon/components';
             transactionListBodyTable.appendChild(tableRow);
 
             // Renderiza la tarjeta
-            const card = transactionItemTemplateCard.content.cloneNode(true).firstElementChild;
+            const card = transactionItemTemplateCard.content.cloneNode(true);
             card.id = transaction.id;
 
             card.querySelector('[data-field="description"]').textContent = transaction.description;
