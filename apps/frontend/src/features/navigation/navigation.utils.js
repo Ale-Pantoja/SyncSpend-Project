@@ -14,9 +14,16 @@ import AuthModule from "../auth/auth.module.js";
  * @returns {Link[]}
  */
 export const getLinks = (pathname) => {
+  if (pathname.endsWith('/')) {
+    pathname = pathname.slice(0, -1);
+  }
+
   /** @type {Link[]} */
   let links = [];
   if (pathname === '/forms') {
+    console.log(links);
+    
+    
     
     links.push({
       type: 'button', 
