@@ -165,7 +165,7 @@ import { Icon } from 'astro-icon/components';
             const typeColor = transaction.type === 'income' ? 'text-green-600' : 'text-red-600';
             
             // Renderiza la fila en la tabla
-            const tableRow = transactionItemTemplateTable.content.cloneNode(true).firstElementChild;
+            const tableRow = transactionItemTemplateTable.content.cloneNode(true);
             tableRow.id = transaction.id;    
 
             tableRow.querySelector('input[data-field="description"]').value = transaction.description;

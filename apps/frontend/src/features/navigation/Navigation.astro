@@ -39,7 +39,8 @@ import logoPng from '../../assets/Logo.png'
     </div>
 
     <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu-overlay" class="hidden fixed inset-0 bg-black opacity-50 z-30"></div>
+    <div id="mobile-menu-overlay" class="hidden fixed inset-0 bg-black opacity-50 z-30">
+    </div>
 </nav>
 
 <script>
@@ -67,12 +68,15 @@ import logoPng from '../../assets/Logo.png'
         btn.innerHTML = link.text;
         btn.className = `font-medium ${isMobile ? 'text-lg w-full text-left p-2 rounded-md hover:bg-teal-700' : 'text-white no-underline hover:underline'}`;
         container.append(btn);
+        console.log(btn);
+        
       } else {
         const a = document.createElement('a');
         a.href = link.path;
         a.innerHTML = link.text;
         a.className = `font-medium ${isMobile ? 'text-lg w-full text-left p-2 rounded-md hover:bg-teal-700' : 'text-white no-underline hover:underline'}`;
         container.append(a);
+        console.log(a);  
       }
     });
   };
